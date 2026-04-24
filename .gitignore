@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local database (each machine has its own)
+*.db
+*.db-shm
+*.db-wal
+
+# claude local settings
+.claude/settings.local.json
