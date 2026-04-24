@@ -1,26 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #F5F2ED;
+  --surface: #FFFFFF;
+  --surface-hover: #FAF8F5;
+  --border: #E2DDD6;
+  --border-strong: #C8C0B5;
+  --text-primary: #1A1714;
+  --text-secondary: #6B6259;
+  --text-muted: #9C9189;
+  --accent: #2D5A3D;
+  --accent-light: #EBF2ED;
+  --accent-hover: #234830;
+  --gold: #C49A3C;
+  --gold-light: #FAF3E0;
+  --danger: #C0392B;
+  --danger-light: #FDECEA;
+  --strong: #2D5A3D;
+  --strong-bg: #EBF2ED;
+  --possible: #C49A3C;
+  --possible-bg: #FAF3E0;
+  --weak: #9C9189;
+  --weak-bg: #F0EDE8;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: 'DM Serif Display', serif;
+  line-height: 1.2;
 }
