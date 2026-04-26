@@ -36,15 +36,29 @@ export default function Sidebar() {
 
       {/* Logo */}
       <div style={{ padding: "4px 8px 28px" }}>
-        <div style={{ background: "#FFFFFF", borderRadius: "10px", padding: "8px 10px", display: "inline-block" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logos/logo_en_32096.png"
-            alt="Focus Group"
-            style={{ width: "174px", height: "auto", display: "block" }}
-          />
-        </div>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.05em", marginTop: "8px", paddingInlineStart: "4px" }}>
+        <svg viewBox="0 0 188 44" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", maxWidth: "188px", display: "block" }}>
+          <defs>
+            <clipPath id="logo-circle-clip">
+              <circle cx="22" cy="22" r="21" />
+            </clipPath>
+          </defs>
+          {/* Red circle */}
+          <circle cx="22" cy="22" r="22" fill="#E8503A" />
+          {/* Concentric white rings clipped to circle, centered left */}
+          <g clipPath="url(#logo-circle-clip)">
+            <circle cx="10" cy="22" r="5"   fill="none" stroke="white" strokeWidth="3.2" />
+            <circle cx="10" cy="22" r="11"  fill="none" stroke="white" strokeWidth="3.2" />
+            <circle cx="10" cy="22" r="17"  fill="none" stroke="white" strokeWidth="3.2" />
+            <circle cx="10" cy="22" r="23"  fill="none" stroke="white" strokeWidth="3.2" />
+            <circle cx="10" cy="22" r="29"  fill="none" stroke="white" strokeWidth="3.2" />
+          </g>
+          {/* FOCUSGROUP text */}
+          <text x="50" y="30" fontFamily="'Poppins', sans-serif" fontSize="17">
+            <tspan fontWeight="700" fill="#FFFFFF">FOCUS</tspan>
+            <tspan fontWeight="300" fill="rgba(255,255,255,0.65)">GROUP</tspan>
+          </text>
+        </svg>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.05em", marginTop: "6px", paddingInlineStart: "2px" }}>
           {t.recruiterDesk}
         </div>
       </div>
@@ -150,22 +164,6 @@ export default function Sidebar() {
   );
 }
 
-/* ── Focus Group swirl icon ── */
-function SwirlIcon({ size = 34 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="50" cy="50" r="50" fill="#E8503A" />
-      <circle cx="34" cy="50" r="8"  fill="none" stroke="white" strokeWidth="6" strokeLinecap="round"
-        strokeDasharray="38 62" strokeDashoffset="-8" />
-      <circle cx="34" cy="50" r="19" fill="none" stroke="white" strokeWidth="6" strokeLinecap="round"
-        strokeDasharray="70 50" strokeDashoffset="-14" />
-      <circle cx="34" cy="50" r="30" fill="none" stroke="white" strokeWidth="6" strokeLinecap="round"
-        strokeDasharray="100 90" strokeDashoffset="-22" />
-      <circle cx="34" cy="50" r="41" fill="none" stroke="white" strokeWidth="6" strokeLinecap="round"
-        strokeDasharray="128 130" strokeDashoffset="-30" />
-    </svg>
-  );
-}
 
 function GridIcon() {
   return (
