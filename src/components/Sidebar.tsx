@@ -34,27 +34,12 @@ export default function Sidebar() {
       height: "100vh",
     }}>
 
-      {/* Logo — force LTR so RTL layout doesn't mirror the icon */}
-      <div style={{ padding: "4px 8px 28px", direction: "ltr" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {/* Circle icon: CSS border-radius clips the rings reliably */}
-          <div style={{ width: 40, height: 40, borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="20" cy="20" r="20" fill="#E8503A" />
-              <circle cx="9" cy="20" r="5"   fill="none" stroke="white" strokeWidth="3" />
-              <circle cx="9" cy="20" r="11"  fill="none" stroke="white" strokeWidth="3" />
-              <circle cx="9" cy="20" r="17"  fill="none" stroke="white" strokeWidth="3" />
-              <circle cx="9" cy="20" r="23"  fill="none" stroke="white" strokeWidth="3" />
-              <circle cx="9" cy="20" r="29"  fill="none" stroke="white" strokeWidth="3" />
-            </svg>
-          </div>
-          {/* Text */}
-          <div style={{ fontFamily: "'Poppins', sans-serif", fontSize: "15px", lineHeight: 1 }}>
-            <span style={{ fontWeight: 700, color: "#FFFFFF" }}>FOCUS</span>
-            <span style={{ fontWeight: 300, color: "rgba(255,255,255,0.65)" }}>GROUP</span>
-          </div>
+      {/* Logo */}
+      <div style={{ padding: "4px 8px 28px" }}>
+        <div style={{ fontFamily: "'Arial', sans-serif", fontSize: "17px", fontWeight: 700, color: "#FFFFFF", lineHeight: 1 }}>
+          קבוצת פוקוס
         </div>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.05em", marginTop: "8px" }}>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.05em", marginTop: "6px" }}>
           {t.recruiterDesk}
         </div>
       </div>
