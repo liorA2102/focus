@@ -223,7 +223,7 @@ export const translations = {
 
   he: {
     sidebar: {
-      recruiterDesk: "שולחן המגייס",
+      recruiterDesk: "מערכת גיוס",
       positions:  "משרות",
       customers:  "לקוחות",
       candidates: "מועמדים",
