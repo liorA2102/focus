@@ -34,31 +34,33 @@ export default function Sidebar() {
       height: "100vh",
     }}>
 
-      {/* Logo */}
-      <div style={{ padding: "4px 8px 28px" }}>
-        <svg viewBox="0 0 188 44" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", maxWidth: "188px", display: "block" }}>
-          <defs>
-            <clipPath id="logo-circle-clip">
-              <circle cx="22" cy="22" r="21" />
-            </clipPath>
-          </defs>
-          {/* Red circle */}
-          <circle cx="22" cy="22" r="22" fill="#E8503A" />
-          {/* Concentric white rings clipped to circle, centered left */}
-          <g clipPath="url(#logo-circle-clip)">
-            <circle cx="10" cy="22" r="5"   fill="none" stroke="white" strokeWidth="3.2" />
-            <circle cx="10" cy="22" r="11"  fill="none" stroke="white" strokeWidth="3.2" />
-            <circle cx="10" cy="22" r="17"  fill="none" stroke="white" strokeWidth="3.2" />
-            <circle cx="10" cy="22" r="23"  fill="none" stroke="white" strokeWidth="3.2" />
-            <circle cx="10" cy="22" r="29"  fill="none" stroke="white" strokeWidth="3.2" />
-          </g>
-          {/* FOCUSGROUP text */}
-          <text x="50" y="30" fontFamily="'Poppins', sans-serif" fontSize="17">
-            <tspan fontWeight="700" fill="#FFFFFF">FOCUS</tspan>
-            <tspan fontWeight="300" fill="rgba(255,255,255,0.65)">GROUP</tspan>
-          </text>
-        </svg>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.05em", marginTop: "6px", paddingInlineStart: "2px" }}>
+      {/* Logo — force LTR so RTL layout doesn't mirror the SVG */}
+      <div style={{ padding: "4px 8px 28px", direction: "ltr" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          {/* Circle icon */}
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+            <defs>
+              <mask id="fg-logo-mask">
+                <circle cx="20" cy="20" r="20" fill="white" />
+              </mask>
+            </defs>
+            <circle cx="20" cy="20" r="20" fill="#E8503A" />
+            <g mask="url(#fg-logo-mask)">
+              <circle cx="20" cy="20" r="20" fill="#E8503A" />
+              <circle cx="9"  cy="20" r="4.5"  fill="none" stroke="white" strokeWidth="3" />
+              <circle cx="9"  cy="20" r="10"   fill="none" stroke="white" strokeWidth="3" />
+              <circle cx="9"  cy="20" r="15.5" fill="none" stroke="white" strokeWidth="3" />
+              <circle cx="9"  cy="20" r="21"   fill="none" stroke="white" strokeWidth="3" />
+              <circle cx="9"  cy="20" r="26.5" fill="none" stroke="white" strokeWidth="3" />
+            </g>
+          </svg>
+          {/* Text */}
+          <div style={{ fontFamily: "'Poppins', sans-serif", fontSize: "15px", lineHeight: 1 }}>
+            <span style={{ fontWeight: 700, color: "#FFFFFF" }}>FOCUS</span>
+            <span style={{ fontWeight: 300, color: "rgba(255,255,255,0.65)" }}>GROUP</span>
+          </div>
+        </div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.05em", marginTop: "8px" }}>
           {t.recruiterDesk}
         </div>
       </div>
