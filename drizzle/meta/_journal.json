@@ -8,6 +8,27 @@
       "when": 1777009900655,
       "tag": "0000_needy_rick_jones",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1745539200000,
+      "tag": "0001_fix_candidate_matches_unique",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1745539300000,
+      "tag": "0002_add_clients",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1745600000000,
+      "tag": "0003_add_jobmaster_url",
+      "breakpoints": true
     }
   ]
 }

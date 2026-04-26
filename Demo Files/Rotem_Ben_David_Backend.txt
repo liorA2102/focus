@@ -1,0 +1,64 @@
+ROTEM BEN-DAVID
+Backend Engineer
+Tel Aviv, Israel | rotem.bendavid@gmail.com | +972-54-299-6601 | github.com/rotembendavid
+
+────────────────────────────────────────────────────────────────
+
+PROFESSIONAL SUMMARY
+
+Backend engineer with 5 years of experience, including 2 years in fintech building payment and reconciliation systems. Comfortable in Node.js and Go. I care about correctness and reliability — especially where money is involved. Looking for a role where the backend work is the product, not just plumbing.
+
+────────────────────────────────────────────────────────────────
+
+EXPERIENCE
+
+Backend Engineer — Payoneer                                    2022 – Present
+Tel Aviv, Israel
+- Built and maintained payment disbursement service (Node.js + PostgreSQL) processing $2M+/day
+- Designed idempotency layer for external payment provider integrations (Visa, Mastercard, local rails)
+- Implemented reconciliation engine that reduced unmatched transactions from 0.8% to 0.04%
+- Led reliability improvements: introduced circuit breakers and retry policies; reduced payment failures by 60%
+- On-call rotation; participated in 2 incident reviews involving cross-bank settlement delays
+
+Backend Engineer — Next Insurance                              2020 – 2022
+Ra'anana, Israel
+- Developed underwriting and quoting APIs consumed by 3 external broker platforms
+- Worked on policy lifecycle management system (Node.js, NestJS, MySQL)
+- Wrote integration tests covering all external payment and document generation flows
+- Contributed to team's shift from monolith to service-oriented architecture
+
+Software Engineer — IDF Cyber Unit                             2017 – 2020
+- Developed internal tooling for data processing pipelines (Python, Go)
+- Gained experience with high-reliability systems and strict code review practices
+
+────────────────────────────────────────────────────────────────
+
+EDUCATION
+
+B.Sc. Computer Science — Hebrew University of Jerusalem        2013 – 2017
+GPA: 90/100 | Summa Cum Laude
+
+────────────────────────────────────────────────────────────────
+
+SKILLS
+
+Languages:     Node.js / TypeScript, Go, Python, SQL
+Frameworks:    NestJS, Express, gRPC, REST
+Databases:     PostgreSQL, MySQL, Redis, DynamoDB
+Messaging:     Kafka, SQS, RabbitMQ
+Infrastructure: AWS, Docker, Kubernetes
+Reliability:   Circuit breakers, idempotency, distributed tracing (Jaeger), Datadog
+
+────────────────────────────────────────────────────────────────
+
+LANGUAGES
+
+Hebrew — Native | English — Fluent
+
+────────────────────────────────────────────────────────────────
+
+ADDITIONAL
+
+- PCI-DSS awareness training (2022, 2023)
+- Contributed to open-source: pg-boss (job queue for PostgreSQL)
+- Blog: medium.com/@rotembendavid — posts on reliability patterns in fintech

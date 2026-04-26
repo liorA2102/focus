@@ -1,0 +1,63 @@
+YAEL MIZRAHI
+UX / Product Designer
+Tel Aviv, Israel | yael.mizrahi.ux@gmail.com | +972-52-610-4455 | portfolio: yaelmizrahi.com
+
+────────────────────────────────────────────────────────────────
+
+PROFESSIONAL SUMMARY
+
+UX designer with 4 years of experience, the last two focused on marketplace and e-commerce products. I drive design from initial research through to shipped product — not just wireframes. Figma power-user. Strong background in user interviews and usability testing. Looking for a role where design has real influence on product decisions.
+
+────────────────────────────────────────────────────────────────
+
+EXPERIENCE
+
+Product Designer — eBay Israel (via Crossrider)                2022 – Present
+Tel Aviv, Israel
+- Lead designer for the Seller Hub — tools used by 80,000+ Israeli sellers
+- Ran 12 usability tests; redesigned the listing creation flow, reducing drop-off by 31%
+- Shipped the mobile-first "Quick List" feature (iOS + Android); became top-rated seller tool in IL market
+- Collaborated daily with PMs and engineers in dual-track agile process
+- Established the Israeli team's design system component library in Figma (120+ components)
+
+UX Designer — Travelist (travel marketplace startup)           2021 – 2022
+Tel Aviv, Israel
+- Sole designer for a 20-person startup; owned the full product from research to delivery
+- Conducted 40+ user interviews to validate product-market fit assumptions
+- Designed buyer search and discovery flows, seller dashboard, and booking confirmation system
+- Prototyped and tested 3 major concepts before launch
+
+UX Design Intern — Conduit (acquired by Como)                  2020 – 2021
+Tel Aviv, Israel
+- Assisted senior designers with wireframes and research synthesis
+- Delivered competitive analysis for mobile app redesign project
+
+────────────────────────────────────────────────────────────────
+
+EDUCATION
+
+B.Des. Visual Communication — Bezalel Academy of Arts & Design 2016 – 2020
+Major: Digital Experience Design | Graduated with Distinction
+
+────────────────────────────────────────────────────────────────
+
+SKILLS
+
+Design:        UX research, information architecture, interaction design, prototyping
+Research:      User interviews, usability testing, surveys, card sorting, heatmap analysis
+Tools:         Figma (expert), FigJam, Maze, Hotjar, Miro, Zeplin, Adobe Illustrator
+Collaboration: Jira, Notion, Linear; comfortable working directly with React component libraries
+
+────────────────────────────────────────────────────────────────
+
+PORTFOLIO HIGHLIGHTS
+
+- eBay Quick List: yaelmizrahi.com/quicklist
+- Travelist Booking Flow: yaelmizrahi.com/travelist
+- Design System: yaelmizrahi.com/design-system
+
+────────────────────────────────────────────────────────────────
+
+LANGUAGES
+
+Hebrew — Native | English — Fluent | Spanish — Conversational

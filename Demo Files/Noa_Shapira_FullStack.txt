@@ -1,0 +1,62 @@
+NOA SHAPIRA
+Senior Full-Stack Developer
+Tel Aviv, Israel | noa.shapira@gmail.com | +972-52-344-7821 | linkedin.com/in/noashapira
+
+────────────────────────────────────────────────────────────────
+
+PROFESSIONAL SUMMARY
+
+Senior full-stack developer with 7 years of experience building high-scale distributed systems. Currently at Outbrain, where I've worked on ad delivery infrastructure serving 10B+ requests/day. Strong across the entire stack — Node.js backends, React frontends, and everything in between. Fluent English (lived in NYC 2017–2019). Looking to move to a product with bigger user impact.
+
+────────────────────────────────────────────────────────────────
+
+EXPERIENCE
+
+Senior Software Engineer — Outbrain                            2020 – Present
+Tel Aviv, Israel
+- Led rebuild of the real-time bid evaluation engine (Node.js + Redis), reducing p99 latency by 40%
+- Built internal A/B testing framework used by 12 product teams
+- Mentored 3 junior engineers; ran weekly tech sessions
+- Stack: Node.js, TypeScript, React, PostgreSQL, Kafka, AWS
+
+Software Engineer — Walla! Communications                      2018 – 2020
+Tel Aviv, Israel
+- Built and maintained editorial CMS used by 80 journalists daily
+- Integrated third-party ad providers via REST and VAST protocols
+- Stack: Node.js, React, MySQL
+
+Software Engineer (Intern → Junior) — IDF Intelligence Unit   2016 – 2018
+- Developed internal data visualisation dashboards
+- Wrote automation scripts in Python
+
+────────────────────────────────────────────────────────────────
+
+EDUCATION
+
+B.Sc. Computer Science — Tel Aviv University                   2013 – 2016
+GPA: 88/100 | Dean's List
+
+────────────────────────────────────────────────────────────────
+
+SKILLS
+
+Languages:     JavaScript / TypeScript, Python, SQL, Bash
+Frontend:      React, Next.js, Redux, Tailwind CSS
+Backend:       Node.js, Express, NestJS, REST, GraphQL
+Databases:     PostgreSQL, MySQL, Redis, DynamoDB
+Infrastructure: AWS (EC2, RDS, Lambda, SQS), Docker, Kubernetes, Kafka
+Other:         Git, CI/CD (GitHub Actions, Jenkins), Datadog, Jira
+
+────────────────────────────────────────────────────────────────
+
+LANGUAGES
+
+Hebrew — Native | English — Fluent
+
+────────────────────────────────────────────────────────────────
+
+ADDITIONAL
+
+- Speaker at NodeTLV 2023: "Scaling Bid Evaluation Without Losing Your Mind"
+- Open source contributor: react-query, node-cache
+- Available immediately

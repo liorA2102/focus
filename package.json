@@ -3,26 +3,32 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node node_modules/next/dist/bin/next dev",
+    "dev": "node node_modules/next/dist/bin/next dev -p 3001",
     "build": "node node_modules/next/dist/bin/next build",
     "start": "node node_modules/next/dist/bin/next start",
     "lint": "eslint",
     "db:migrate": "tsx src/db/migrate.ts",
+    "db:migrate-clients": "tsx src/db/migrate-clients.ts",
     "setup": "npm install && npm run db:migrate"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.0",
     "better-sqlite3": "^12.9.0",
+    "playwright": "^1.49.0",
     "drizzle-orm": "^0.45.2",
+    "mammoth": "^1.12.0",
     "next": "^16.2.4",
+    "pdf-parse": "^2.4.5",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@playwright/test": "^1.49.0",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
+    "@types/pdf-parse": "^1.1.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "drizzle-kit": "^0.31.10",

@@ -1,0 +1,298 @@
+{
+  "fields": [
+    {
+      "tag": "input",
+      "type": "hidden",
+      "name": "jobNum",
+      "id": "jobnum",
+      "placeholder": "",
+      "label": "כותרת משרה",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "hidden",
+      "name": "addressFlag",
+      "id": "addressFlag",
+      "placeholder": "",
+      "label": "כותרת משרה",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "hidden",
+      "name": "noAddressFlag",
+      "id": "noAddressFlag",
+      "placeholder": "",
+      "label": "כותרת משרה",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "hidden",
+      "name": "newTemp",
+      "id": "",
+      "placeholder": "",
+      "label": "כותרת משרה",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "jobTitle",
+      "id": "jobTitle",
+      "placeholder": " ",
+      "label": "כותרת משרה",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "hidden",
+      "name": "salaryShow",
+      "id": "salaryShowCheck",
+      "placeholder": "",
+      "label": "שכר",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "hidden",
+      "name": "salaryHours",
+      "id": "salaryHours",
+      "placeholder": "",
+      "label": "שכר",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "hidden",
+      "name": "perHour",
+      "id": "perHour",
+      "placeholder": "",
+      "label": "שכר",
+      "options": null
+    },
+    {
+      "tag": "select",
+      "type": "select-one",
+      "name": "",
+      "id": "salaryType",
+      "placeholder": null,
+      "label": "שכר",
+      "options": [
+        "0: לחודש",
+        "1: לשעה"
+      ]
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "salaryMin",
+      "id": "salaryMin",
+      "placeholder": " ",
+      "label": "שכר החל מ",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "salaryMax",
+      "id": "salaryMax",
+      "placeholder": " ",
+      "label": "שכר עד...",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "salaryInfo",
+      "id": "salaryInfo",
+      "placeholder": " ",
+      "label": "בונוסים ותנאים נוספים",
+      "options": null
+    },
+    {
+      "tag": "textarea",
+      "type": "textarea",
+      "name": "teur",
+      "id": "teur",
+      "placeholder": " ",
+      "label": "* תאור המשרה",
+      "options": null
+    },
+    {
+      "tag": "textarea",
+      "type": "textarea",
+      "name": "drishot",
+      "id": "drishot",
+      "placeholder": " ",
+      "label": "* דרישות המשרה",
+      "options": null
+    },
+    {
+      "tag": "select",
+      "type": "select-one",
+      "name": "seniorityLevelId",
+      "id": "seniorityLevelId",
+      "placeholder": null,
+      "label": "* שנות נסיון",
+      "options": [
+        ": -בחר-",
+        "1: no experience",
+        "2: 1-2",
+        "3: 3-4",
+        "4: 5-6",
+        "5: 7+"
+      ]
+    },
+    {
+      "tag": "input",
+      "type": "radio",
+      "name": "jobAlertType",
+      "id": "jobAlertTypeAI",
+      "placeholder": "",
+      "label": "",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "radio",
+      "name": "jobAlertType",
+      "id": "jobAlertTypeNotAI",
+      "placeholder": "",
+      "label": "",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "number",
+      "name": "creditsLimit",
+      "id": "creditsLimit",
+      "placeholder": "ללא הגבלת קרדיטים",
+      "label": "הגבלת קרדיטים למשרה",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "",
+      "id": "",
+      "placeholder": "",
+      "label": null,
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "hidden",
+      "name": "sendemail",
+      "id": "sendemail",
+      "placeholder": "",
+      "label": null,
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "tel",
+      "name": "phone",
+      "id": "phone",
+      "placeholder": " ",
+      "label": "טלפון להצגה",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "tel",
+      "name": "whatsappPhone",
+      "id": "whatsappPhone",
+      "placeholder": " ",
+      "label": "whatsapp להצגה",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "job_publicEmail",
+      "id": "job_publicEmail",
+      "placeholder": " ",
+      "label": "לינק חיצוני להגשת מועמדות (רק למשרות קליק מאסטר)",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "name": "allowMessage",
+      "id": "allowMessage",
+      "placeholder": "",
+      "label": "אפשר פניה בצ'אט למגייס המשרה",
+      "options": null
+    },
+    {
+      "tag": "select",
+      "type": "select-one",
+      "name": "metapelUserNum",
+      "id": "metapelUserNum",
+      "placeholder": null,
+      "label": "בחר מגייס משרה",
+      "options": [
+        "1383: יעקב"
+      ]
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "jobnumber",
+      "id": "jobnumber",
+      "placeholder": " ",
+      "label": "מספר מזהה משרה",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "name": "jmOnly",
+      "id": "jmOnly",
+      "placeholder": "",
+      "label": "בלעדי בג'וב מאסטר",
+      "options": null
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "name": "isAnonymus",
+      "id": "isAnonymus",
+      "placeholder": "",
+      "label": "הצג את שם החברה",
+      "options": null
+    }
+  ],
+  "buttons": [
+    {
+      "tag": "button",
+      "type": "button",
+      "text": "בטל",
+      "name": "",
+      "id": "button3"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "text": "תצוגה מקדימה",
+      "name": "",
+      "id": "button2"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "text": "שמור כטיוטה",
+      "name": "",
+      "id": "button2"
+    },
+    {
+      "tag": "button",
+      "type": "submit",
+      "text": "פרסום משרה",
+      "name": "",
+      "id": "button1"
+    }
+  ]
+}

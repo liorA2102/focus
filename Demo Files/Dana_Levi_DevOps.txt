@@ -1,0 +1,61 @@
+DANA LEVI
+DevOps / Platform Engineer
+Tel Aviv, Israel | dana.levi.devops@gmail.com | +972-50-772-9934 | github.com/danalevi-ops
+
+────────────────────────────────────────────────────────────────
+
+PROFESSIONAL SUMMARY
+
+DevOps engineer with 4 years of hands-on experience running Kubernetes clusters and Terraform-managed cloud infrastructure at scale. I care about reliability, cost, and developer experience — not just keeping the lights on. Currently at Playtika managing multi-region AWS infra for 30M daily players. Looking for a platform role where I can own bigger problems.
+
+────────────────────────────────────────────────────────────────
+
+EXPERIENCE
+
+Platform Engineer — Playtika                                   2022 – Present
+Herzliya, Israel
+- Manage 15 Kubernetes clusters (EKS) across 3 AWS regions; ~900 running pods at peak
+- Reduced AWS spend by $380K/year through right-sizing, spot instance strategy, and idle cleanup
+- Migrated 60% of infrastructure from ClickOps to Terraform (IaC); cut provisioning time from days to minutes
+- Built internal developer portal (Backstage) used by 120+ engineers
+- Implemented GitOps with ArgoCD; deployment frequency went from weekly to on-demand
+- Incident commander for 3 P0 outages; drove blameless post-mortems
+
+DevOps Engineer — Varonis Systems                              2020 – 2022
+Herzliya, Israel
+- Owned CI/CD pipelines for 8 product teams (Jenkins → GitHub Actions migration)
+- Managed production PostgreSQL and MongoDB clusters on AWS RDS
+- Wrote automation scripts in Python and Bash; reduced manual ops tasks by 70%
+- Participated in on-call rotation; MTTR improved from 45 min to 12 min over tenure
+
+────────────────────────────────────────────────────────────────
+
+EDUCATION
+
+B.Sc. Information Systems Engineering — Ben-Gurion University  2016 – 2020
+GPA: 87/100
+
+────────────────────────────────────────────────────────────────
+
+SKILLS
+
+Cloud:         AWS (EKS, EC2, RDS, Lambda, S3, CloudWatch, Cost Explorer), GCP (basics)
+Containers:    Kubernetes (EKS, Helm, ArgoCD), Docker, Istio
+IaC:           Terraform, Pulumi (learning), Ansible
+CI/CD:         GitHub Actions, Jenkins, GitLab CI
+Scripting:     Python, Bash, Go (basic)
+Monitoring:    Prometheus, Grafana, Datadog, PagerDuty
+Databases:     PostgreSQL, MySQL, MongoDB, Redis
+
+────────────────────────────────────────────────────────────────
+
+CERTIFICATIONS
+
+- AWS Certified Solutions Architect – Professional (2023)
+- Certified Kubernetes Administrator (CKA) (2022)
+
+────────────────────────────────────────────────────────────────
+
+LANGUAGES
+
+Hebrew — Native | English — Fluent

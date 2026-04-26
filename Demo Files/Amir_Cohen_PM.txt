@@ -1,0 +1,62 @@
+AMIR COHEN
+Product Manager
+Tel Aviv, Israel | amir.cohen.pm@gmail.com | +972-54-881-2233 | linkedin.com/in/amircohenpm
+
+────────────────────────────────────────────────────────────────
+
+PROFESSIONAL SUMMARY
+
+Product Manager with 5 years of experience in B2B SaaS, specialising in growth and activation. I own the full product loop — from user interviews and data analysis through to launch and iteration. Comfortable running A/B experiments, writing SQL, and presenting to C-suite. Looking for a senior IC or team-lead PM role at a product-led company.
+
+────────────────────────────────────────────────────────────────
+
+EXPERIENCE
+
+Senior Product Manager — Similarweb                            2022 – Present
+Tel Aviv, Israel
+- Owned onboarding and activation for the core analytics product (250K monthly active users)
+- Ran 30+ A/B experiments; improved 7-day activation rate from 34% to 51%
+- Partnered with data science to build a propensity-to-churn model; reduced 90-day churn by 18%
+- Defined and shipped v2 of the workspace collaboration feature (shipped Q3 2023, +22% seat expansion)
+- Wrote PRDs, ran weekly sprint ceremonies, managed roadmap in Jira
+
+Product Manager — Appsflyer                                    2020 – 2022
+Tel Aviv, Israel
+- PM for the Dashboard & Reporting squad (B2B, mobile attribution)
+- Led rebuild of the custom report builder; cut average report creation time by 60%
+- Managed relationships with 3 enterprise design partners throughout beta
+
+Associate Product Manager — Wix                                2019 – 2020
+Tel Aviv, Israel
+- Rotational APM program across 4 squads (Editor, Billing, SEO, Payments)
+- Shipped minor features independently; wrote first solo PRD for SEO tools improvements
+
+────────────────────────────────────────────────────────────────
+
+EDUCATION
+
+B.A. Industrial Engineering & Management — Technion            2015 – 2019
+Specialisation: Information Systems | GPA: 88/100
+
+────────────────────────────────────────────────────────────────
+
+SKILLS & TOOLS
+
+Product:       User research, A/B experimentation, roadmapping, PRDs, OKRs
+Analytics:     Mixpanel, Amplitude, Looker, SQL (proficient), Python (basic)
+Process:       Agile/Scrum, Shape Up, Jobs-to-be-Done
+Tools:         Jira, Confluence, Figma (can read & comment), Notion
+
+────────────────────────────────────────────────────────────────
+
+LANGUAGES
+
+Hebrew — Native | English — Fluent (C2) | French — Conversational
+
+────────────────────────────────────────────────────────────────
+
+ADDITIONAL
+
+- Guest lecturer, IDC Reichman University — "Growth Product Management" (2023)
+- Volunteer mentor, Google for Startups accelerator cohort 2022
+- Expectation: team-level PM scope with room to grow into Group PM
