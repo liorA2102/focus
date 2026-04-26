@@ -35,15 +35,17 @@ export default function Sidebar() {
     }}>
 
       {/* Logo */}
-      <div style={{ padding: "4px 8px 32px", display: "flex", alignItems: "center", gap: "10px" }}>
-        <SwirlIcon size={34} />
-        <div style={{ lineHeight: 1.1 }}>
-          <div style={{ fontFamily: "'Poppins', sans-serif", fontSize: "15px", fontWeight: "700", color: "#FFFFFF", letterSpacing: "0.04em" }}>
-            FOCUS<span style={{ fontWeight: "300", color: "rgba(255,255,255,0.70)" }}>GROUP</span>
-          </div>
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.05em", marginTop: "2px" }}>
-            {t.recruiterDesk}
-          </div>
+      <div style={{ padding: "4px 8px 28px" }}>
+        <div style={{ background: "#FFFFFF", borderRadius: "10px", padding: "8px 10px", display: "inline-block" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logos/logo_en_32096.png"
+            alt="Focus Group"
+            style={{ width: "174px", height: "auto", display: "block" }}
+          />
+        </div>
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.05em", marginTop: "8px", paddingInlineStart: "4px" }}>
+          {t.recruiterDesk}
         </div>
       </div>
 
