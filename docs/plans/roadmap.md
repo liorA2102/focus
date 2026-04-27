@@ -118,3 +118,4 @@
 ## Backlog
 
 - **Filter positions by "published to JobMaster"** — add a filter toggle on the positions board to show only positions that have been published to JobMaster (relies on module 1 data)
+- **JobMaster publish indicator + link** — show a "פורסם בג'ובמאסטר" badge on the position card and detail page, with a clickable link to the live public post URL stored after Playwright completes the submission.
