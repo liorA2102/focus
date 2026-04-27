@@ -112,3 +112,9 @@
 | 2 | LinkedIn job post (text + image) | Module 1 for the badge write-back |
 | 3 | General post factory | Module 2 (reuses all components) |
 | 4 | Reports + revenue tracking | Standalone — can be parallelized |
+
+---
+
+## Backlog
+
+- **Filter positions by "published to JobMaster"** — add a filter toggle on the positions board to show only positions that have been published to JobMaster (relies on module 1 data)
