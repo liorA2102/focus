@@ -119,3 +119,5 @@
 
 - **Filter positions by "published to JobMaster"** — add a filter toggle on the positions board to show only positions that have been published to JobMaster (relies on module 1 data)
 - **JobMaster publish indicator + link** — show a "פורסם בג'ובמאסטר" badge on the position card and detail page, with a clickable link to the live public post URL stored after Playwright completes the submission.
+- **Income & commissions report** — when a position is marked as hired, Jacob inputs the closing salary offered to the candidate; the system calculates his commission (e.g. 1 month salary) and displays a revenue report filterable by client and time period.
+- **Email CV inbox listener** — poll/listen to Jacob's Outlook inbox via IMAP or Microsoft Graph, extract CV attachments, and import them as candidates; each imported candidate must be linked to the position they applied for (so they're treated as active applicants, distinct from pool candidates who may already be employed); on every import run, trigger position-to-candidate auto-matching for all affected positions.
