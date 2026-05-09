@@ -34,6 +34,27 @@ A local web app (runs on Jacob's machine, accessed via browser) built by Lior fo
 - No numeric scores — labels only
 - Simple, predictable, forgiving UI
 
+## Public Website Sync
+
+Open positions are synced to the public website (`focusgroup.co.il`) via Turso (cloud SQLite).
+
+```
+Focus app (Jacob's PC) → Turso → focusgroup.co.il (Next.js on Vercel)
+```
+
+- **New/updated position** → upserted to Turso immediately (POST/PATCH routes)
+- **Closed/deleted position** → removed from Turso immediately
+- **Client/company name** → intentionally NOT synced (confidential, always blank in Turso)
+- Website pages use `force-dynamic` — every visitor request reads Turso live, no caching
+
+**Manual resync** if Turso gets out of sync:
+```
+POST http://localhost:3001/api/admin/sync-turso   ← purges stale + re-upserts all open
+GET  http://localhost:3001/api/admin/sync-turso   ← read back what's in Turso
+```
+
+Website repo: `~/projects/focus-website` — see its `CLAUDE.md` for deployment instructions.
+
 ## Full Design Doc
 
 `docs/plans/2026-04-24-focus-system-design.md`
