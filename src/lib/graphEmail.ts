@@ -232,7 +232,7 @@ export async function pollGraphInbox(): Promise<PollResult> {
             summary:           cvData.summary         ?? null,
             summaryHe:         cvData.summaryHe       ?? null,
             cvPath:            path.join(process.cwd(), "uploads", "cvs", safeName),
-            source:            "email",
+            source:            /jobmaster/i.test(message.subject + " " + message.bodyPreview) ? "jobmaster" : "website",
             appliedPositionId: positionId,
           }).returning();
 

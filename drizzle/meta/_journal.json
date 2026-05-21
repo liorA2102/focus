@@ -50,6 +50,13 @@
       "when": 1746835200000,
       "tag": "0006_source_email_to_jobmaster",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1779235200000,
+      "tag": "0007_add_candidate_updated_at",
+      "breakpoints": true
     }
   ]
 }

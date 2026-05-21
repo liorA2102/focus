@@ -260,7 +260,7 @@ export async function pollEmailInbox(): Promise<PollResult> {
                 summary:           cvData.summary         ?? null,
                 summaryHe:         cvData.summaryHe       ?? null,
                 cvPath:            filePath,
-                source:            "email",
+                source:            jobSourceUrl ? "jobmaster" : "website",
                 appliedPositionId: positionId,
                 jobSourceUrl:      jobSourceUrl ?? null,
               })

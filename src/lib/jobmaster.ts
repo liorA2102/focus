@@ -68,7 +68,19 @@ export async function publishToJobMaster(position: {
       console.warn("[jobmaster] Seniority failed:", e);
     }
 
-    // ── 5. Description & requirements ─────────────────────────────────────
+    // ── 5. CV inbox email ─────────────────────────────────────────────────
+    try {
+      const emailInput = page.locator("input.contenteditable-email").first();
+      await emailInput.click();
+      await emailInput.type("cvfocusg@gmail.com");
+      await emailInput.press("Enter");
+      await page.waitForTimeout(300);
+      console.log("[jobmaster] CV inbox email added");
+    } catch (e) {
+      console.warn("[jobmaster] Email field failed:", e);
+    }
+
+    // ── 6. Description & requirements ─────────────────────────────────────
     if (position.description) await page.fill("#teur", position.description);
     if (position.requirements) await page.fill("#drishot", position.requirements);
 

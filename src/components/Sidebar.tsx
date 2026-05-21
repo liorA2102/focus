@@ -10,13 +10,14 @@ export default function Sidebar() {
   const { lang, toggle } = useLang();
   const t = translations[lang].sidebar;
 
-  const nav = [
-    { href: "/positions",  label: t.positions,  icon: <GridIcon />     },
-    { href: "/customers",  label: t.customers,  icon: <BuildingIcon /> },
-    { href: "/candidates", label: t.candidates, icon: <PersonIcon />   },
-    { href: "/email",      label: t.emailInbox, icon: <InboxIcon />    },
-    { href: "/linkedin",          label: t.linkedin, icon: <PenIcon />     },
-    { href: "/linkedin/gallery",  label: t.gallery,  icon: <GalleryIcon /> },
+  const mainNav = [
+    { href: "/positions",         label: t.positions,  icon: <GridIcon />     },
+    { href: "/customers",         label: t.customers,  icon: <BuildingIcon /> },
+    { href: "/candidates",        label: t.candidates, icon: <PersonIcon />   },
+    { href: "/linkedin/gallery",  label: t.gallery,    icon: <GalleryIcon />  },  ];
+
+  const settingsNav = [
+    { href: "/email", label: t.emailInbox, icon: <InboxIcon /> },
   ];
 
   const h = new Date().getHours();
@@ -51,10 +52,61 @@ export default function Sidebar() {
 
       {/* Nav */}
       <nav style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-        {nav.map(({ href, label, icon }) => {
+        {mainNav.map(({ href, label, icon }) => {
           const active = href === "/linkedin"
             ? pathname === "/linkedin"
             : pathname.startsWith(href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "10px 12px",
+                borderRadius: "8px",
+                textDecoration: "none",
+                fontFamily: "var(--font-body)",
+                fontSize: "14px",
+                fontWeight: active ? "600" : "400",
+                color: active ? "#FFFFFF" : "var(--sidebar-text)",
+                background: active ? "var(--sidebar-active-bg)" : "transparent",
+                borderInlineStart: `3px solid ${active ? "var(--coral)" : "transparent"}`,
+                transition: "background 130ms ease, color 130ms ease, border-color 130ms ease",
+                userSelect: "none",
+              }}
+              onMouseEnter={(e) => {
+                if (!active) (e.currentTarget as HTMLAnchorElement).style.background = "var(--sidebar-hover-bg)";
+              }}
+              onMouseLeave={(e) => {
+                if (!active) (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+              }}
+            >
+              <span style={{ opacity: active ? 1 : 0.5, flexShrink: 0, color: active ? "var(--coral)" : "currentColor" }}>
+                {icon}
+              </span>
+              {label}
+            </Link>
+          );
+        })}
+
+        {/* Settings section */}
+        <div style={{ marginTop: "16px", marginBottom: "4px", padding: "0 12px" }}>
+          <span style={{
+            fontFamily: "var(--font-body)",
+            fontSize: "10px",
+            fontWeight: 600,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.28)",
+          }}>
+            {t.settingsSection}
+          </span>
+        </div>
+
+        {settingsNav.map(({ href, label, icon }) => {
+          const active = pathname.startsWith(href);
           return (
             <Link
               key={href}

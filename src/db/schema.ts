@@ -58,12 +58,13 @@ export const candidates = sqliteTable("candidates", {
   summaryHe:         text("summary_he"),          // AI-generated summary (Hebrew)
   employmentHistory: text("employment_history"),  // JSON array of { company, title, startDate, endDate }
   cvPath:            text("cv_path"),             // local file path
-  source: text("source", { enum: ["jobmaster", "linkedin", "manual", "website"] })
+  source: text("source", { enum: ["jobmaster", "manual", "website"] })
     .notNull()
     .default("manual"),
   appliedPositionId: integer("applied_position_id").references(() => positions.id, { onDelete: "set null" }),
   jobSourceUrl: text("job_source_url"),
   createdAt: text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
+  updatedAt: text("updated_at").notNull().$defaultFn(() => new Date().toISOString()),
 });
 
 export const candidateMatches = sqliteTable("candidate_matches", {

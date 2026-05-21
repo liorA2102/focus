@@ -30,8 +30,9 @@ type Candidate = {
   summary: string | null;
   summaryHe: string | null;
   cvPath: string | null;
-  source: "jobmaster" | "linkedin" | "manual" | "website";
+  source: "jobmaster" | "manual" | "website";
   createdAt: string;
+  updatedAt: string;
   matches: MatchWithPosition[];
 };
 
@@ -81,6 +82,16 @@ export default function CandidateDetailPage() {
   const skills: string[]     = candidate.skills     ? JSON.parse(candidate.skills)     : [];
   const industries: string[] = candidate.industries ? JSON.parse(candidate.industries) : [];
   const initials = candidate.fullName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+
+  const fmtDate = (iso: string) => {
+    const d = new Date(iso);
+    const diffMs   = Date.now() - d.getTime();
+    const diffDays = Math.floor(diffMs / 86400000);
+    if (diffDays === 0) return lang === "he" ? "היום" : "Today";
+    if (diffDays === 1) return lang === "he" ? "אתמול" : "Yesterday";
+    if (diffDays < 30)  return lang === "he" ? `לפני ${diffDays} ימים` : `${diffDays} days ago`;
+    return d.toLocaleDateString(lang === "he" ? "he-IL" : "en-GB", { day: "numeric", month: "short", year: "numeric" });
+  };
   const srcCfg   = SOURCE_COLORS[candidate.source] ?? SOURCE_COLORS.manual;
   const srcLabel = t.sourceLabels[candidate.source] ?? candidate.source;
 
@@ -151,6 +162,9 @@ export default function CandidateDetailPage() {
                 fontFamily: "var(--font-body)", textTransform: "uppercase", letterSpacing: "0.04em",
               }}>
                 {srcLabel}
+              </span>
+              <span style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: "var(--text-muted)" }}>
+                {t.updatedAt}: {fmtDate(candidate.updatedAt)}
               </span>
             </div>
           </div>

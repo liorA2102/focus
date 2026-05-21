@@ -17,7 +17,7 @@ type Candidate = {
   summary: string | null;
   summaryHe: string | null;
   skills: string | null;
-  source: "jobmaster" | "linkedin" | "manual" | "email";
+  source: "jobmaster" | "manual" | "website";
   jobSourceUrl: string | null;
 };
 

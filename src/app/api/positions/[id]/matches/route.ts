@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { candidateMatches } from "@/db/schema";
+import { candidateMatches, candidates } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 
 export async function PATCH(
@@ -20,6 +20,12 @@ export async function PATCH(
         )
       )
       .returning();
+
+    await db
+      .update(candidates)
+      .set({ updatedAt: new Date().toISOString() })
+      .where(eq(candidates.id, updated.candidateId));
+
     return NextResponse.json(updated);
   } catch (err) {
     console.error(err);

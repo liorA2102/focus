@@ -20,7 +20,7 @@ type Candidate = {
   skills: string | null;
   phone: string | null;
   location: string | null;
-  source: "jobmaster" | "linkedin" | "manual" | "website";
+  source: "jobmaster" | "manual" | "website";
   createdAt: string;
   matches: PositionMatch[];
 };
@@ -35,7 +35,6 @@ type UploadItem = {
 const SOURCE_CFG: Record<string, { color: string; bg: string; dot: string }> = {
   manual:    { color: "var(--text-muted)", bg: "var(--light-gray)",  dot: "#9CA3AF" },
   jobmaster: { color: "var(--steel)",      bg: "var(--steel-light)", dot: "var(--steel)" },
-  linkedin:  { color: "#0A66C2",           bg: "#E8F3FF",            dot: "#0A66C2" },
   website:   { color: "#7C3AED",           bg: "#EDE9FE",            dot: "#7C3AED" },
 };
 

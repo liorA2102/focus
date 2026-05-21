@@ -48,7 +48,7 @@ export default function GalleryPage() {
     <div>
       <div style={{ marginBottom: "28px" }}>
         <div className="accent-rule" style={{ marginBottom: "12px" }} />
-        <h2 style={{ fontFamily: "var(--font-display)", fontSize: "34px", fontWeight: "400", letterSpacing: "-0.3px", color: "var(--navy)", lineHeight: 1.1 }}>
+        <h2 style={{ fontFamily: "var(--font-body)", fontSize: "32px", fontWeight: 800, letterSpacing: "-0.5px", color: "var(--navy)", lineHeight: 1.1, margin: 0 }}>
           {t.sidebar.gallery}
         </h2>
       </div>
