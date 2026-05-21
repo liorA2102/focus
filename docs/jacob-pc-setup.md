@@ -76,6 +76,35 @@ pm2 restart focus-app
 
 ---
 
+## LinkedIn Extension (Chrome)
+
+This lets Jacob paste saved comment templates on LinkedIn and automatically captures leads into the Focus app.
+
+### Install once
+
+1. Open Chrome → go to `chrome://extensions`
+2. Enable **Developer mode** (toggle, top-right corner)
+3. Click **Load unpacked**
+4. Navigate to `C:\Focus\focus-linkedin-extension` and click **Select Folder**
+
+The Focus Group logo will appear in the Chrome toolbar. That's it — no login needed.
+
+### Using it
+
+1. Make sure the Focus app is running (`http://localhost:3001`)
+2. Go to LinkedIn and click **Comment** on any post
+3. The Focus logo button appears at the bottom-right of the comment box
+4. Click it → pick a template → text is inserted automatically
+5. The post author is silently added to **Leads** in the Focus app
+
+### After an app update
+
+The extension folder updates automatically with the app (it lives inside `C:\Focus`). No reinstall needed — just reload it if Chrome shows an error:
+
+`chrome://extensions` → Find "Focus LinkedIn Assistant" → click the **↺ reload** icon.
+
+---
+
 ## Set Chrome to Open Focus on Startup (optional)
 
 Chrome → Settings → **On startup** → "Open a specific page" → `http://localhost:3001`

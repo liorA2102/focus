@@ -134,3 +134,26 @@ export const linkedinImages = sqliteTable("linkedin_images", {
   label:     text("label"),
   createdAt: text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
 });
+
+export const commentTemplates = sqliteTable("comment_templates", {
+  id:            integer("id").primaryKey({ autoIncrement: true }),
+  title:         text("title").notNull(),
+  body:          text("body").notNull(),
+  imageFilename: text("image_filename"),
+  createdAt:     text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
+  updatedAt:     text("updated_at").notNull().$defaultFn(() => new Date().toISOString()),
+});
+
+export const leads = sqliteTable("leads", {
+  id:                integer("id").primaryKey({ autoIncrement: true }),
+  name:              text("name").notNull(),
+  headline:          text("headline"),
+  company:           text("company"),
+  linkedinUrl:       text("linkedin_url").notNull(),
+  profilePictureUrl: text("profile_picture_url"),
+  postUrl:           text("post_url"),
+  templateUsed:      text("template_used"),
+  notes:             text("notes"),
+  createdAt:         text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
+  updatedAt:         text("updated_at").notNull().$defaultFn(() => new Date().toISOString()),
+});

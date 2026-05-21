@@ -57,6 +57,13 @@
       "when": 1779235200000,
       "tag": "0007_add_candidate_updated_at",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1779321600000,
+      "tag": "0008_add_leads_and_templates",
+      "breakpoints": true
     }
   ]
 }

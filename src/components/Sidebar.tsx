@@ -14,7 +14,9 @@ export default function Sidebar() {
     { href: "/positions",         label: t.positions,  icon: <GridIcon />     },
     { href: "/customers",         label: t.customers,  icon: <BuildingIcon /> },
     { href: "/candidates",        label: t.candidates, icon: <PersonIcon />   },
-    { href: "/linkedin/gallery",  label: t.gallery,    icon: <GalleryIcon />  },  ];
+    { href: "/leads",             label: t.leads,      icon: <LeadsIcon />    },
+    { href: "/linkedin/gallery",  label: t.gallery,    icon: <GalleryIcon />  },
+  ];
 
   const settingsNav = [
     { href: "/email", label: t.emailInbox, icon: <InboxIcon /> },
@@ -250,6 +252,16 @@ function InboxIcon() {
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.8" />
       <path d="M1 6h4l1.5 2h3L11 6h4" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function LeadsIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle cx="6" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M1 13c0-2.761 2.239-4 5-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M11 8v5M8.5 10.5l2.5-2.5 2.5 2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
