@@ -26,6 +26,7 @@
     "playwright": "^1.49.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "sharp": "^0.34.5",
     "tsx": "^4.21.0"
   },
   "devDependencies": {

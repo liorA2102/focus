@@ -39,6 +39,8 @@ export async function POST(req: NextRequest) {
     const applicantName = (formData.get("name") as string | null)?.trim() || null;
     const applicantEmail = (formData.get("email") as string | null)?.trim() || null;
     const applicantPhone = (formData.get("phone") as string | null)?.trim() || null;
+    const positionIdRaw = (formData.get("positionId") as string | null)?.trim() || null;
+    const appliedPositionId = positionIdRaw ? Number(positionIdRaw) : null;
 
     if (!file) {
       return NextResponse.json({ error: "No CV file provided" }, { status: 400, headers: CORS });
@@ -89,8 +91,9 @@ export async function POST(req: NextRequest) {
         location:        parsed.location      ?? null,
         summary:         parsed.summary       ?? null,
         summaryHe:       parsed.summaryHe     ?? null,
-        cvPath:          filePath,
-        source:          "website",
+        cvPath:             filePath,
+        source:             "website",
+        appliedPositionId:  appliedPositionId,
       })
       .returning();
 

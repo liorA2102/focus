@@ -19,6 +19,7 @@ type Candidate = {
   skills: string | null;
   source: "jobmaster" | "manual" | "website";
   jobSourceUrl: string | null;
+  appliedPositionId: number | null;
 };
 
 type CandidateStatus = "open" | "client_review" | "interview" | "hired" | "rejected" | "relevant" | "not_relevant";
@@ -1058,6 +1059,7 @@ export default function PositionDetailPage() {
                 <CandidateRow
                   key={match.id}
                   match={match}
+                  positionId={position.id}
                   updating={updatingMatch === match.id}
                   last={i === pendingMatches.length - 1 && !hasReviewed}
                   onStatusChange={(status) => updateMatch(match.id, { candidateStatus: status })}
@@ -1082,6 +1084,7 @@ export default function PositionDetailPage() {
                 <CandidateRow
                   key={match.id}
                   match={match}
+                  positionId={position.id}
                   updating={updatingMatch === match.id}
                   last={i === arr.length - 1 && reviewedNotRelevant.length === 0}
                   onStatusChange={(status) => updateMatch(match.id, { candidateStatus: status })}
@@ -1117,6 +1120,7 @@ export default function PositionDetailPage() {
                     <CandidateRow
                       key={match.id}
                       match={match}
+                      positionId={position.id}
                       updating={updatingMatch === match.id}
                       last={i === reviewedNotRelevant.length - 1}
                       onStatusChange={(status) => updateMatch(match.id, { candidateStatus: status })}
@@ -1188,9 +1192,10 @@ export default function PositionDetailPage() {
         </div>
       )}
 
-      {queueState !== null && (
+      {queueState !== null && position && (
         <QueueModal
           match={queueState.queue[queueState.idx]}
+          positionId={position.id}
           total={queueState.queue.length}
           current={queueState.idx + 1}
           slideOut={queueState.slideOut}
@@ -1603,8 +1608,9 @@ const PIPELINE_STEP_COLORS: { status: CandidateStatus; color: string }[] = [
   { status: "hired",         color: "#1A6B4A"               },
 ];
 
-function CandidateRow({ match, updating, last, onStatusChange, onOpen, onSendEmail, t }: {
+function CandidateRow({ match, positionId, updating, last, onStatusChange, onOpen, onSendEmail, t }: {
   match: Match;
+  positionId: number;
   updating: boolean;
   last: boolean;
   onStatusChange: (status: CandidateStatus) => void;
@@ -1681,7 +1687,7 @@ function CandidateRow({ match, updating, last, onStatusChange, onOpen, onSendEma
 
       {!onOpen && modalOpen && (
         <CandidateModal
-          match={match} cfg={cfg} initials={initials} t={t}
+          match={match} positionId={positionId} cfg={cfg} initials={initials} t={t}
           onClose={() => setModalOpen(false)}
           onReview={(status) => { onStatusChange(status); setModalOpen(false); }}
           onSendEmail={onSendEmail ? () => { setModalOpen(false); onSendEmail(); } : undefined}
@@ -1691,8 +1697,9 @@ function CandidateRow({ match, updating, last, onStatusChange, onOpen, onSendEma
   );
 }
 
-function CandidateModal({ match, cfg, initials, t, onClose, onReview, onSendEmail }: {
+function CandidateModal({ match, positionId, cfg, initials, t, onClose, onReview, onSendEmail }: {
   match: Match;
+  positionId: number;
   cfg: { color: string; bg: string; label: string };
   initials: string;
   t: DetailT;
@@ -1776,11 +1783,11 @@ function CandidateModal({ match, cfg, initials, t, onClose, onReview, onSendEmai
             <span style={{
               fontFamily: "var(--font-body)", fontSize: "10px", fontWeight: "700",
               letterSpacing: "0.07em", textTransform: "uppercase",
-              color: c.source === "manual" ? "var(--steel)" : "var(--strong)",
-              background: c.source === "manual" ? "var(--steel-light)" : "var(--strong-bg)",
+              color: c.appliedPositionId === positionId ? "var(--strong)" : "var(--steel)",
+              background: c.appliedPositionId === positionId ? "var(--strong-bg)" : "var(--steel-light)",
               padding: "2px 7px", borderRadius: "4px", display: "inline-block",
             }}>
-              {c.source === "manual" ? "Pool" : "Applied"}
+              {c.appliedPositionId === positionId ? t.appliedBadge : t.poolBadge}
             </span>
           </div>
           <span style={{
@@ -2247,8 +2254,9 @@ function EmailDraftModal({ match, position, onClose, t }: {
 }
 
 /* ── Tinder-style queue modal ── */
-function QueueModal({ match, total, current, slideOut, t, onClose, onReview }: {
+function QueueModal({ match, positionId, total, current, slideOut, t, onClose, onReview }: {
   match: Match;
+  positionId: number;
   total: number;
   current: number;
   slideOut: "left" | "right" | null;
@@ -2344,11 +2352,11 @@ function QueueModal({ match, total, current, slideOut, t, onClose, onReview }: {
               <span style={{
                 fontFamily: "var(--font-body)", fontSize: "10px", fontWeight: "700",
                 letterSpacing: "0.07em", textTransform: "uppercase",
-                color: c.source === "manual" ? "var(--steel)" : "var(--strong)",
-                background: c.source === "manual" ? "var(--steel-light)" : "var(--strong-bg)",
+                color: c.appliedPositionId === positionId ? "var(--strong)" : "var(--steel)",
+                background: c.appliedPositionId === positionId ? "var(--strong-bg)" : "var(--steel-light)",
                 padding: "2px 7px", borderRadius: "4px", display: "inline-block",
               }}>
-                {c.source === "manual" ? "Pool" : "Applied"}
+                {c.appliedPositionId === positionId ? t.appliedBadge : t.poolBadge}
               </span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "6px", flexShrink: 0 }}>

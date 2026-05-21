@@ -44,6 +44,11 @@ export default function EmailInboxPage() {
   const [pollError,  setPollError]  = useState<string | null>(null);
   const [now,        setNow]        = useState(() => Date.now());
 
+  const [appVersion,   setAppVersion]   = useState<{ version: string; gitCommit: string; gitDate: string | null } | null>(null);
+  const [updating,     setUpdating]     = useState(false);
+  const [updateResult, setUpdateResult] = useState<"started" | "error" | null>(null);
+  const [updateError,  setUpdateError]  = useState<string | null>(null);
+
   const POLL_INTERVAL_MS = 15 * 60 * 1000;
 
   const fetchLastPolled = () =>
@@ -63,6 +68,11 @@ export default function EmailInboxPage() {
       });
 
     fetchLastPolled();
+
+    fetch("/api/admin/app-version")
+      .then((r) => r.json())
+      .then((d) => setAppVersion(d))
+      .catch(() => {});
 
     const ticker = setInterval(() => {
       setNow(Date.now());
@@ -93,6 +103,27 @@ export default function EmailInboxPage() {
       setSaveError(String(err));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    setUpdating(true);
+    setUpdateResult(null);
+    setUpdateError(null);
+    try {
+      const res  = await fetch("/api/admin/update", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        setUpdateResult("error");
+        setUpdateError(data.error ?? "Unknown error");
+      } else {
+        setUpdateResult("started");
+      }
+    } catch (err) {
+      setUpdateResult("error");
+      setUpdateError(String(err));
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -388,6 +419,71 @@ export default function EmailInboxPage() {
             fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--coral)",
           }}>
             {pollError}
+          </div>
+        )}
+      </div>
+
+      {/* ── App update card ── */}
+      <div style={{
+        background: "var(--surface)", border: "1px solid var(--border)",
+        borderRadius: "12px", padding: "24px 28px", marginTop: "16px",
+      }}>
+        <h3 style={{
+          fontFamily: "var(--font-body)",
+          fontSize: "15px", fontWeight: "600", color: "var(--navy)",
+          marginBottom: "12px",
+        }}>
+          {t.updateTitle}
+        </h3>
+
+        {appVersion && (
+          <div style={{
+            display: "flex", gap: "20px", flexWrap: "wrap",
+            marginBottom: "16px",
+          }}>
+            <span style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-secondary)" }}>
+              {t.updateVersion}{" "}
+              <strong style={{ color: "var(--navy)" }}>{appVersion.version}</strong>
+            </span>
+            <span style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-secondary)" }}>
+              {t.updateCommit}{" "}
+              <strong style={{ color: "var(--navy)", fontFamily: "monospace" }}>{appVersion.gitCommit}</strong>
+            </span>
+            {appVersion.gitDate && (
+              <span style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-secondary)" }}>
+                {t.updateLastUpdated}{" "}
+                <strong style={{ color: "var(--navy)" }}>{formatDate(appVersion.gitDate)}</strong>
+              </span>
+            )}
+          </div>
+        )}
+
+        <button
+          onClick={handleUpdate}
+          disabled={updating || updateResult === "started"}
+          className="btn btn-primary"
+          style={{ fontSize: "14px", padding: "10px 24px", opacity: updating ? 0.6 : 1 }}
+        >
+          {updating ? t.updating : t.updateBtn}
+        </button>
+
+        {updateResult === "started" && (
+          <div style={{
+            marginTop: "14px", padding: "12px 16px",
+            background: "#E0F2EB", borderRadius: "8px",
+            fontFamily: "var(--font-body)", fontSize: "13px", color: "#1A6B4A",
+          }}>
+            {t.updateStarted}
+          </div>
+        )}
+
+        {updateResult === "error" && (
+          <div style={{
+            marginTop: "14px", padding: "12px 16px",
+            background: "var(--coral-light)", borderRadius: "8px",
+            fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--coral)",
+          }}>
+            {t.updateError}{updateError ? `: ${updateError}` : ""}
           </div>
         )}
       </div>
