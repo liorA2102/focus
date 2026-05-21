@@ -1,5 +1,5 @@
-# Focus App — Windows Setup Script
-# Requires: Node.js (https://nodejs.org) — nothing else.
+# Focus App - Windows Setup Script
+# Requires: Node.js (https://nodejs.org) - nothing else.
 #
 # Run once as Administrator in PowerShell:
 #   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
@@ -14,7 +14,7 @@ Write-Host ""
 Write-Host "=== Focus App Setup ===" -ForegroundColor Cyan
 Write-Host ""
 
-# ── 1. Check Node.js ──────────────────────────────────────────────────────────
+# 1. Check Node.js
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
     Write-Host "ERROR: Node.js is not installed." -ForegroundColor Red
     Write-Host "Download and install it from https://nodejs.org (LTS version), then re-run this script."
@@ -23,7 +23,7 @@ if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
 }
 Write-Host "Node.js $(node --version) found." -ForegroundColor Green
 
-# ── 2. Download & extract latest code ─────────────────────────────────────────
+# 2. Download & extract latest code
 Write-Host "Downloading Focus app..." -ForegroundColor Yellow
 Invoke-WebRequest -Uri $ZipUrl -OutFile $ZipFile -UseBasicParsing
 
@@ -46,15 +46,15 @@ if ($envBackup) {
 
 Set-Location $AppDir
 
-# ── 3. Check .env.local ───────────────────────────────────────────────────────
+# 3. Check .env.local
 if (-not (Test-Path "$AppDir\.env.local")) {
     Write-Host ""
-    Write-Host "No .env.local found — please paste the environment file and re-run." -ForegroundColor Red
+    Write-Host "No .env.local found - please paste the environment file and re-run." -ForegroundColor Red
     exit 1
 }
 Write-Host ".env.local found." -ForegroundColor Green
 
-# ── 4. Install dependencies & build ───────────────────────────────────────────
+# 4. Install dependencies & build
 Write-Host "Installing dependencies (this may take a few minutes)..." -ForegroundColor Yellow
 npm install
 
@@ -66,17 +66,17 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# ── 5. Install PM2 ────────────────────────────────────────────────────────────
+# 5. Install PM2
 Write-Host "Installing PM2..." -ForegroundColor Yellow
 npm install -g pm2
 
-# ── 6. Start both processes with PM2 and save ─────────────────────────────────
+# 6. Start both processes with PM2 and save
 pm2 delete focus-app 2>$null
 pm2 delete focus-scan 2>$null
 pm2 start ecosystem.config.cjs
 pm2 save
 
-# ── 7. Register auto-start via Task Scheduler ─────────────────────────────────
+# 7. Register auto-start via Task Scheduler
 Write-Host "Registering auto-start on login..." -ForegroundColor Yellow
 
 @"
@@ -94,18 +94,17 @@ Register-ScheduledTask `
     -Action $Action -Trigger $Trigger -Settings $Settings `
     -RunLevel Highest -Force | Out-Null
 
-# ── 8. Register weekly silent auto-update ─────────────────────────────────────
+# 8. Register weekly silent auto-update (Sundays 7am)
 Write-Host "Registering weekly auto-update (Sundays 7am)..." -ForegroundColor Yellow
 
 $UpdateAction   = New-ScheduledTaskAction `
     -Execute "powershell.exe" `
     -Argument "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$AppDir\update-windows.ps1`"" `
     -WorkingDirectory $AppDir
-# Run every Sunday at 7:00 AM; if the PC was off, run at next login instead
 $UpdateTrigger  = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Sunday -At "07:00"
 $UpdateSettings = New-ScheduledTaskSettingsSet `
     -ExecutionTimeLimit (New-TimeSpan -Minutes 30) `
-    -StartWhenAvailable          # runs at next login if PC was off at 7am
+    -StartWhenAvailable
 Register-ScheduledTask `
     -TaskName "FocusAppUpdate" `
     -Action $UpdateAction -Trigger $UpdateTrigger -Settings $UpdateSettings `

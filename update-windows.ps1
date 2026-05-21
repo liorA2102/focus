@@ -1,4 +1,4 @@
-# Focus App — Update Script
+# Focus App - Update Script
 # Run this whenever Lior pushes new changes to GitHub.
 #
 # Open PowerShell in C:\Focus and run:
@@ -14,7 +14,7 @@ Write-Host ""
 
 Set-Location $AppDir
 
-# ── 1. Backup .env.local and database ─────────────────────────────────────────
+# 1. Backup .env.local and database
 $envContent = Get-Content "$AppDir\.env.local" -Raw -ErrorAction SilentlyContinue
 if (-not $envContent) {
     Write-Host "ERROR: .env.local not found in $AppDir" -ForegroundColor Red
@@ -22,7 +22,7 @@ if (-not $envContent) {
 }
 $dbExists = Test-Path "$AppDir\focus.db"
 
-# ── 2. Download latest code ────────────────────────────────────────────────────
+# 2. Download latest code
 Write-Host "Downloading latest version..." -ForegroundColor Yellow
 Invoke-WebRequest -Uri $ZipUrl -OutFile $ZipFile -UseBasicParsing
 
@@ -38,18 +38,18 @@ Get-ChildItem $src | Where-Object { $_.Name -notin @("focus.db", ".env.local", "
 Remove-Item "$env:TEMP\focus-update-extract" -Recurse -Force
 Remove-Item $ZipFile
 
-# ── 3. Restore .env.local (in case it got overwritten) ────────────────────────
+# 3. Restore .env.local (in case it got overwritten)
 $envContent | Set-Content "$AppDir\.env.local"
 
-# ── 4. Install any new dependencies ───────────────────────────────────────────
+# 4. Install any new dependencies
 Write-Host "Installing dependencies..." -ForegroundColor Yellow
 npm install
 
-# ── 5. Run any new migrations ─────────────────────────────────────────────────
+# 5. Run any new migrations
 Write-Host "Running database migrations..." -ForegroundColor Yellow
 npm run db:migrate
 
-# ── 6. Build ──────────────────────────────────────────────────────────────────
+# 6. Build
 Write-Host "Building..." -ForegroundColor Yellow
 npm run build
 if ($LASTEXITCODE -ne 0) {
@@ -57,7 +57,7 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# ── 7. Restart pm2 ────────────────────────────────────────────────────────────
+# 7. Restart pm2
 Write-Host "Restarting app..." -ForegroundColor Yellow
 pm2 restart ecosystem.config.cjs --update-env
 pm2 save
