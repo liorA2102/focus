@@ -138,7 +138,7 @@ export default function AddClientModal({ onClose, onCreated }: Props) {
           padding: "24px 28px 20px",
           borderBottom: "1px solid var(--border)",
         }}>
-          <h3 style={{ fontFamily: "'Poppins', sans-serif", fontSize: "20px", fontWeight: "700", color: "var(--navy)", margin: 0 }}>
+          <h3 style={{ fontFamily: "var(--font-body)", fontSize: "20px", fontWeight: "700", color: "var(--navy)", margin: 0 }}>
             {t.addClientTitle}
           </h3>
           <button
@@ -154,7 +154,7 @@ export default function AddClientModal({ onClose, onCreated }: Props) {
 
           {step === 1 ? (
             <>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)", margin: 0 }}>
+              <p style={{ fontFamily: "var(--font-body)", fontSize: "13px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)", margin: 0 }}>
                 {t.step1Title}
               </p>
               <input
@@ -167,7 +167,7 @@ export default function AddClientModal({ onClose, onCreated }: Props) {
                 autoFocus
               />
               {fetchError && (
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--coral)", margin: 0 }}>
+                <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--coral)", margin: 0 }}>
                   {fetchError}
                 </p>
               )}
@@ -194,7 +194,7 @@ export default function AddClientModal({ onClose, onCreated }: Props) {
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "4px" }}>
                 <button
                   onClick={() => setStep(1)}
-                  style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "var(--text-muted)", padding: 0 }}
+                  style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-muted)", padding: 0 }}
                 >
                   ← {t.step1Title}
                 </button>
@@ -202,7 +202,7 @@ export default function AddClientModal({ onClose, onCreated }: Props) {
 
               {/* Auth wall notice */}
               {fetchError && (
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "var(--text-muted)", background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "8px", padding: "10px 12px", margin: 0 }}>
+                <p style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-muted)", background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "8px", padding: "10px 12px", margin: 0 }}>
                   {fetchError}
                 </p>
               )}
@@ -216,7 +216,7 @@ export default function AddClientModal({ onClose, onCreated }: Props) {
                     style={{ width: "52px", height: "52px", borderRadius: "50%", objectFit: "cover", border: "1.5px solid var(--border)" }}
                     onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
                   />
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "var(--text-muted)", margin: 0 }}>
+                  <p style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-muted)", margin: 0 }}>
                     Logo will be saved automatically
                   </p>
                 </div>
@@ -230,7 +230,7 @@ export default function AddClientModal({ onClose, onCreated }: Props) {
                 { key: "linkedinUrl", label: t.linkedin,    required: false },
               ].map(({ key, label, required }) => (
                 <div key={key}>
-                  <label style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", fontWeight: "600", color: "var(--text-primary)", display: "block", marginBottom: "6px" }}>
+                  <label style={{ fontFamily: "var(--font-body)", fontSize: "13px", fontWeight: "600", color: "var(--text-primary)", display: "block", marginBottom: "6px" }}>
                     {label}{required && " *"}
                   </label>
                   <input
@@ -244,7 +244,7 @@ export default function AddClientModal({ onClose, onCreated }: Props) {
               ))}
 
               {saveError && (
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--coral)", margin: 0 }}>
+                <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--coral)", margin: 0 }}>
                   {saveError}
                 </p>
               )}

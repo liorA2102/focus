@@ -24,15 +24,17 @@ type Position = {
   salaryRange: string | null;
   status: "open" | "filled" | "cancelled";
   postedJobMaster: boolean;
+  jobMasterUrl: string | null;
   postedLinkedin: boolean;
+  linkedinPostUrl: string | null;
   createdAt: string;
   stats: PositionStats;
 };
 
-const POS_STATUS: Record<Position["status"], { label: string; color: string; bg: string }> = {
-  open:        { label: "Open",      color: "var(--strong)",   bg: "var(--strong-bg)"   },
-  filled:      { label: "Filled",    color: "#1A6B4A",         bg: "#E0F2EB"            },
-  cancelled:   { label: "Cancelled", color: "var(--fog)",      bg: "var(--light-gray)"  },
+const STATUS_PILL: Record<Position["status"], { color: string; border: string; dot: string }> = {
+  open:      { color: "var(--possible)", border: "#F5D99A", dot: "var(--possible)" },
+  filled:    { color: "var(--fog)", border: "var(--border)", dot: "var(--fog)" },
+  cancelled: { color: "var(--fog)", border: "var(--border)", dot: "#D1D5DB" },
 };
 
 type Filter = "all" | "open" | "filled" | "cancelled" | "to_review";
@@ -45,7 +47,29 @@ export default function PositionsPage() {
   const [filter, setFilter]       = useState<Filter>("all");
   const [search, setSearch]       = useState("");
   const [loaded, setLoaded]       = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal,    setShowModal]    = useState(false);
+  const [syncing,      setSyncing]      = useState(false);
+  const [syncMsg,      setSyncMsg]      = useState<string | null>(null);
+  const [hoveredCard,  setHoveredCard]  = useState<number | null>(null);
+
+  const handleJobMasterSync = async () => {
+    setSyncing(true);
+    setSyncMsg(null);
+    try {
+      const res  = await fetch("/api/admin/sync-jobmaster", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        setSyncMsg(`שגיאה: ${data.error}`);
+      } else {
+        setSyncMsg(`יובאו ${data.imported} משרות חדשות (${data.skipped} קיימות, ${data.found} נמצאו)`);
+        if (data.imported > 0) fetchPositions();
+      }
+    } catch (err) {
+      setSyncMsg(`שגיאה: ${String(err)}`);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const fetchPositions = async () => {
     try {
@@ -76,7 +100,7 @@ export default function PositionsPage() {
 
   const CARDS = [
     { label: t.metrics.toReview,  value: metrics.toReview,  accent: "var(--coral)",  accentBg: "var(--coral-light)", filter: "to_review" as Filter },
-    { label: t.metrics.open,      value: metrics.open,      accent: "var(--strong)", accentBg: "var(--strong-bg)",   filter: "open"      as Filter },
+    { label: t.metrics.open,      value: metrics.open,      accent: "var(--possible)", accentBg: "var(--possible-bg)", filter: "open"      as Filter },
     { label: t.metrics.filled,    value: metrics.filled,    accent: "#1A6B4A",       accentBg: "#E0F2EB",            filter: "filled"    as Filter },
     { label: t.metrics.cancelled, value: metrics.cancelled, accent: "var(--fog)",    accentBg: "var(--light-gray)",  filter: "cancelled" as Filter },
   ];
@@ -84,52 +108,74 @@ export default function PositionsPage() {
   return (
     <div>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "28px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "28px", gap: "20px" }}>
         <div>
-          <div className="accent-rule" style={{ marginBottom: "12px" }} />
-          <h2 style={{ fontFamily: "'Poppins', sans-serif", fontSize: "32px", fontWeight: "700", letterSpacing: "-0.5px", color: "var(--navy)", lineHeight: 1 }}>
+          <div className="accent-rule" style={{ marginBottom: "10px" }} />
+          <h2 style={{ fontFamily: "var(--font-body)", fontSize: "32px", fontWeight: 800, letterSpacing: "-0.5px", color: "var(--navy)", lineHeight: 1.1, margin: 0 }}>
             {t.title}
           </h2>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-          {t.newPosition}
-        </button>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px", flexShrink: 0 }}>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button
+              onClick={handleJobMasterSync}
+              disabled={syncing}
+              className="btn btn-ghost"
+              style={{ fontSize: "13px", padding: "9px 16px", cursor: syncing ? "default" : "pointer", opacity: syncing ? 0.6 : 1 }}
+            >
+              {syncing ? "מסנכרן…" : "↓ סנכרן JobMaster"}
+            </button>
+            <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+              {t.newPosition}
+            </button>
+          </div>
+          {syncMsg && (
+            <span style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: syncMsg.startsWith("שגיאה") ? "var(--coral)" : "var(--strong)" }}>
+              {syncMsg}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* ── Pipeline health dashboard ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "20px" }}>
         {CARDS.map((card, i) => {
           const isActive = card.filter !== null && filter === card.filter;
+          const isHovered = hoveredCard === i;
           const isClickable = card.filter !== null;
+          const isLifted = isActive || isHovered;
           return (
             <div
               key={card.label}
               className="stagger-item"
               onClick={() => card.filter && setFilter(isActive ? "all" : card.filter)}
+              onMouseEnter={() => isClickable && setHoveredCard(i)}
+              onMouseLeave={() => setHoveredCard(null)}
               style={{
-                background: isActive ? card.accentBg : "var(--surface)",
-                border: `1.5px solid ${isActive ? card.accent : "var(--border)"}`,
+                background: isActive ? card.accentBg : isHovered ? card.accentBg : "var(--surface)",
+                border: `1.5px solid ${isActive || isHovered ? card.accent : "var(--border)"}`,
                 borderRadius: "12px",
                 padding: "18px 16px 16px",
                 cursor: isClickable ? "pointer" : "default",
                 transition: "all 180ms var(--ease-out)",
-                transform: isActive ? "translateY(-2px)" : "translateY(0)",
-                boxShadow: isActive ? "0 6px 20px rgba(0,0,0,0.09)" : "none",
+                transform: isLifted ? "translateY(-3px)" : "translateY(0)",
+                boxShadow: isLifted ? `0 8px 24px rgba(0,0,0,0.10)` : "none",
                 position: "relative",
                 overflow: "hidden",
                 animationDelay: `${i * 40}ms`,
               }}
             >
-              {isActive && (
+              {(isActive || isHovered) && (
                 <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: card.accent, borderRadius: "12px 12px 0 0" }} />
               )}
               <p style={{
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "var(--font-body)",
                 fontSize: "11px", fontWeight: "600",
                 textTransform: "uppercase", letterSpacing: "0.06em",
-                color: isActive ? card.accent : "var(--text-muted)",
+                color: isActive || isHovered ? card.accent : "var(--text-muted)",
                 marginBottom: "10px",
                 whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                transition: "color 180ms var(--ease-out)",
               }}>
                 {card.label}
                 {!isClickable && (
@@ -137,10 +183,11 @@ export default function PositionsPage() {
                 )}
               </p>
               <p style={{
-                fontFamily: "'Poppins', sans-serif",
+                fontFamily: "var(--font-body)",
                 fontSize: "32px", fontWeight: "700", lineHeight: 1,
-                color: isActive ? card.accent : loaded ? (card.value > 0 ? "var(--navy)" : "var(--text-muted)") : "var(--border)",
+                color: isActive || isHovered ? card.accent : loaded ? (card.value > 0 ? "var(--navy)" : "var(--text-muted)") : "var(--border)",
                 letterSpacing: "-1px",
+                transition: "color 180ms var(--ease-out)",
               }}>
                 {loaded ? card.value : "—"}
               </p>
@@ -164,7 +211,7 @@ export default function PositionsPage() {
             width: "100%",
             boxSizing: "border-box",
             padding: "11px 40px 11px 40px",
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "var(--font-body)",
             fontSize: "15px",
             color: "var(--text-primary)",
             background: "var(--surface)",
@@ -209,10 +256,10 @@ export default function PositionsPage() {
           }}>
             📋
           </div>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "20px", fontWeight: "700", color: "var(--navy)", letterSpacing: "-0.3px", marginTop: "4px" }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "20px", fontWeight: "700", color: "var(--navy)", letterSpacing: "-0.3px", marginTop: "4px" }}>
             {t.emptyTitle}
           </p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--text-muted)", maxWidth: "280px", textAlign: "center", lineHeight: "1.65" }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-muted)", maxWidth: "280px", textAlign: "center", lineHeight: "1.65" }}>
             {t.emptySubtitle}
           </p>
           <button
@@ -226,7 +273,7 @@ export default function PositionsPage() {
       ) : loaded && filtered.length === 0 ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "60px 0", gap: "10px" }}>
           <div style={{ fontSize: "32px", opacity: 0.2 }}>◫</div>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "16px", fontWeight: "600", color: "var(--text-secondary)" }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", fontWeight: "600", color: "var(--text-secondary)" }}>
             {q ? t.noSearchResults : t.filteredEmpty}
           </p>
           <button
@@ -235,7 +282,7 @@ export default function PositionsPage() {
               marginTop: "4px", padding: "7px 18px", borderRadius: "20px",
               border: "1.5px solid var(--border)", background: "transparent",
               color: "var(--text-secondary)", fontSize: "13px", fontWeight: "500",
-              cursor: "pointer", fontFamily: "'Inter', sans-serif",
+              cursor: "pointer", fontFamily: "var(--font-body)",
               transition: "all 150ms var(--ease-out)",
             }}
           >
@@ -245,65 +292,72 @@ export default function PositionsPage() {
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "12px" }}>
           {filtered.map((p, i) => {
-            const sColors = POS_STATUS[p.status] ?? POS_STATUS["open"];
-            const s = { ...sColors, label: t.statusLabel[p.status] ?? sColors.label };
-            const hasActivity = p.stats.clientReview > 0 || p.stats.interview > 0 || p.stats.hired > 0;
-            const candidateCount = p.stats.open + (p.stats.relevant ?? 0);
+            const pill = STATUS_PILL[p.status] ?? STATUS_PILL.open;
+            const statusLabel = t.statusLabel[p.status];
+            const newCount = p.stats.open;
+            const chipLabel = newCount === 1 ? t.newCandidate : t.newCandidates;
             return (
-              <Link key={p.id} href={`/positions/${p.id}`} style={{ textDecoration: "none" }}>
-                <div
-                  className="card stagger-item"
-                  style={{ padding: 0, cursor: "pointer", animationDelay: `${i * 35}ms`, overflow: "hidden" }}
-                >
-                  {p.status === "open" && (
-                    <div style={{ height: "3px", background: "var(--coral)", borderRadius: "12px 12px 0 0" }} />
-                  )}
-                  <div style={{ padding: "20px 22px 18px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <span className="badge" style={{ color: s.color, background: s.bg }}>{s.label}</span>
-                        {candidateCount > 0 && (
-                          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "var(--text-muted)", fontWeight: "600", background: "var(--light-gray)", borderRadius: "20px", padding: "2px 8px" }}>
-                            {candidateCount} {t.matched}
-                          </span>
-                        )}
+              <Link
+                key={p.id}
+                href={`/positions/${p.id}`}
+                className="pos-card stagger-item"
+                style={{ animationDelay: `${i * 35}ms` }}
+              >
+                {/* Card body */}
+                <div style={{ padding: "18px 20px 16px", flex: 1, display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {/* Top: client + title / status pill */}
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "10px" }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontFamily: "var(--font-body)", fontSize: "11px", fontWeight: 600, color: "var(--text-muted)", marginBottom: "3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {p.client}
                       </div>
-                      {p.stats.total === 0 && p.status === "open" && (
-                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "var(--coral)", fontWeight: "600" }}>
-                          {t.noCandidates}
-                        </span>
-                      )}
-                    </div>
-
-                    <div style={{ marginBottom: "3px" }}>
-                      <h3 style={{ fontFamily: "'Poppins', sans-serif", fontSize: "16px", fontWeight: "600", color: "var(--text-primary)", lineHeight: 1.3, margin: 0 }}>
+                      <div style={{ fontFamily: "var(--font-body)", fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.3 }}>
                         {p.title}
-                      </h3>
-                    </div>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "var(--text-secondary)", marginBottom: "14px" }}>
-                      {p.client}
-                    </p>
-
-                    <div style={{ display: "flex", gap: "12px", marginBottom: hasActivity ? "14px" : 0 }}>
-                      {p.location && (
-                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "var(--text-muted)" }}>📍 {p.location}</span>
-                      )}
-                      {p.salaryRange && (
-                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "var(--text-muted)" }}>{p.salaryRange}</span>
-                      )}
-                    </div>
-
-                    {/* Mini pipeline bar */}
-                    {hasActivity && (
-                      <div style={{ borderTop: "1px solid var(--border)", paddingTop: "12px" }}>
-                        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                          {p.stats.clientReview > 0 && <PipelineStat label={t.pipeline.clientReview} count={p.stats.clientReview} color="var(--possible)" />}
-                          {p.stats.interview > 0 && <PipelineStat label={t.pipeline.interview} count={p.stats.interview} color="var(--steel)" />}
-                          {p.stats.hired > 0 && <PipelineStat label={t.pipeline.hired} count={p.stats.hired} color="#1A6B4A" />}
-                        </div>
                       </div>
-                    )}
+                    </div>
+                    <span style={{
+                      display: "inline-flex", alignItems: "center", gap: "5px",
+                      fontSize: "10.5px", fontWeight: 600, padding: "3px 9px",
+                      borderRadius: "20px", whiteSpace: "nowrap", flexShrink: 0,
+                      border: `1.5px solid ${pill.border}`,
+                      color: pill.color,
+                      background: "var(--surface)",
+                      fontFamily: "var(--font-body)",
+                    }}>
+                      <span style={{ width: 5, height: 5, borderRadius: "50%", background: pill.dot, flexShrink: 0, display: "inline-block" }} />
+                      {statusLabel}
+                    </span>
                   </div>
+
+                  {/* Candidate chip */}
+                  {newCount > 0 && (
+                    <div className="cand-chip">
+                      <span className="cand-chip-n">{newCount}</span>
+                      <span className="cand-chip-lbl">{chipLabel}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Card footer: publishing badges */}
+                <div style={{ borderTop: "1px solid var(--border)", padding: "8px 20px 10px", display: "flex", justifyContent: "flex-end", gap: "5px" }}>
+                  {p.postedJobMaster ? (
+                    p.jobMasterUrl ? (
+                      <a href={p.jobMasterUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="pub-badge jm">JM</a>
+                    ) : (
+                      <span className="pub-badge jm">JM</span>
+                    )
+                  ) : (
+                    <span className="pub-badge inactive">JM</span>
+                  )}
+                  {p.postedLinkedin ? (
+                    p.linkedinPostUrl ? (
+                      <a href={p.linkedinPostUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="pub-badge li">in</a>
+                    ) : (
+                      <span className="pub-badge li">in</span>
+                    )
+                  ) : (
+                    <span className="pub-badge inactive">in</span>
+                  )}
                 </div>
               </Link>
             );
@@ -321,11 +375,3 @@ export default function PositionsPage() {
   );
 }
 
-function PipelineStat({ label, count, color }: { label: string; count: number; color: string }) {
-  return (
-    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color, display: "flex", alignItems: "center", gap: "4px" }}>
-      <span style={{ fontWeight: "700" }}>{count}</span>
-      <span style={{ color: "var(--text-muted)" }}>{label}</span>
-    </span>
-  );
-}

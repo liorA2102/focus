@@ -162,7 +162,7 @@ export default function NewPositionModal({ onClose, onCreated, preselectedClient
             <p style={{ fontSize: "12px", fontWeight: "600", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "4px" }}>
               {t.newPosition}
             </p>
-            <h2 style={{ fontFamily: "'Poppins', sans-serif", fontSize: "22px", fontWeight: "700", letterSpacing: "-0.3px" }}>
+            <h2 style={{ fontFamily: "var(--font-body)", fontSize: "22px", fontWeight: "700", letterSpacing: "-0.3px" }}>
               {step === "choose" ? t.howToAdd :
                step === "paste"  ? t.pasteEmail :
                t.reviewSave}
@@ -285,7 +285,7 @@ export default function NewPositionModal({ onClose, onCreated, preselectedClient
                         style={{
                           display: "block", width: "100%", textAlign: "start",
                           padding: "10px 14px", background: "none", border: "none",
-                          fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--text-primary)",
+                          fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-primary)",
                           cursor: "pointer",
                         }}
                         onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "var(--bg)"; }}
@@ -302,7 +302,7 @@ export default function NewPositionModal({ onClose, onCreated, preselectedClient
                         padding: "10px 14px", background: "none",
                         borderTop: filteredClients.length > 0 ? "1px solid var(--border)" : "none",
                         borderLeft: "none", borderRight: "none", borderBottom: "none",
-                        fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: "600",
+                        fontFamily: "var(--font-body)", fontSize: "14px", fontWeight: "600",
                         color: "var(--coral)", cursor: "pointer",
                       }}
                       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "var(--bg)"; }}

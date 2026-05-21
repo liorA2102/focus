@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { positions, candidateMatches, candidates } from "@/db/schema";
 import { desc, eq, inArray } from "drizzle-orm";
 import { matchCandidateToPosition } from "@/lib/ai";
+import { syncPositionToTurso } from "@/lib/turso";
 
 export async function GET() {
   try {
@@ -75,6 +76,9 @@ export async function POST(req: NextRequest) {
         }).onConflictDoNothing();
       })
     ); // intentionally not awaited — runs in background
+
+    // Sync new open position to Turso (background)
+    syncPositionToTurso(created).catch(console.error);
 
     return NextResponse.json(created, { status: 201 });
   } catch (err) {

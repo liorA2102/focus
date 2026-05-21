@@ -140,7 +140,7 @@ export default function CustomerDetailPage() {
 
   if (!client) {
     return (
-      <div style={{ padding: "60px 0", textAlign: "center", fontFamily: "'Inter', sans-serif", color: "var(--text-muted)" }}>
+      <div style={{ padding: "60px 0", textAlign: "center", fontFamily: "var(--font-body)", color: "var(--text-muted)" }}>
         Loading…
       </div>
     );
@@ -151,7 +151,7 @@ export default function CustomerDetailPage() {
       {/* Back */}
       <Link
         href="/customers"
-        style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--text-muted)", textDecoration: "none", display: "inline-block", marginBottom: "28px" }}
+        style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-muted)", textDecoration: "none", display: "inline-block", marginBottom: "28px" }}
       >
         {t.back}
       </Link>
@@ -173,7 +173,7 @@ export default function CustomerDetailPage() {
             <div style={{
               width: "80px", height: "80px", borderRadius: "50%", flexShrink: 0,
               background: "var(--navy)", display: "flex", alignItems: "center", justifyContent: "center",
-              fontFamily: "'Poppins', sans-serif", fontSize: "26px", fontWeight: "700", color: "#fff",
+              fontFamily: "var(--font-body)", fontSize: "26px", fontWeight: "700", color: "#fff",
             }}>
               {initials(client.name)}
             </div>
@@ -191,7 +191,7 @@ export default function CustomerDetailPage() {
                   { key: "linkedinUrl", label: t.linkedin    },
                 ] as const).map(({ key, label }) => (
                   <div key={key}>
-                    <label style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", fontWeight: "600", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
+                    <label style={{ fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: "600", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
                       {label}
                     </label>
                     <input
@@ -210,18 +210,18 @@ export default function CustomerDetailPage() {
               </div>
             ) : (
               <>
-                <h1 style={{ fontFamily: "'Poppins', sans-serif", fontSize: "28px", fontWeight: "700", color: "var(--navy)", margin: "0 0 6px" }}>
+                <h1 style={{ fontFamily: "var(--font-display)", fontSize: "30px", fontWeight: "400", color: "var(--navy)", margin: "0 0 6px" }}>
                   {client.name}
                 </h1>
                 {client.tagline && (
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "15px", color: "var(--text-muted)", margin: "0 0 14px" }}>
+                  <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-muted)", margin: "0 0 14px" }}>
                     {client.tagline}
                   </p>
                 )}
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
                   {client.industry && (
                     <span style={{
-                      fontFamily: "'Inter', sans-serif", fontSize: "12px", fontWeight: "600",
+                      fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: "600",
                       color: "var(--text-muted)", background: "var(--bg)",
                       border: "1px solid var(--border)", borderRadius: "6px", padding: "3px 10px",
                       textTransform: "uppercase", letterSpacing: "0.05em",
@@ -230,12 +230,12 @@ export default function CustomerDetailPage() {
                     </span>
                   )}
                   {client.website && (
-                    <a href={client.website} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "var(--steel)", textDecoration: "none" }}>
+                    <a href={client.website} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--steel)", textDecoration: "none" }}>
                       {t.website} ↗
                     </a>
                   )}
                   {client.linkedinUrl && (
-                    <a href={client.linkedinUrl} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "var(--steel)", textDecoration: "none" }}>
+                    <a href={client.linkedinUrl} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--steel)", textDecoration: "none" }}>
                       LinkedIn ↗
                     </a>
                   )}
@@ -281,7 +281,7 @@ export default function CustomerDetailPage() {
                       style={{
                         width: "100%", padding: "11px 16px", background: "none", border: "none",
                         cursor: "pointer", textAlign: "start",
-                        fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: "500",
+                        fontFamily: "var(--font-body)", fontSize: "14px", fontWeight: "500",
                         color: "var(--coral)",
                         display: "flex", alignItems: "center", gap: "9px",
                         transition: "background 120ms ease",
@@ -305,7 +305,7 @@ export default function CustomerDetailPage() {
         padding: "24px 28px", marginBottom: "24px",
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)", margin: 0 }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)", margin: 0 }}>
             {t.openPositions}
           </p>
           <button className="btn btn-primary" onClick={() => setShowPositionModal(true)} style={{ fontSize: "13px", padding: "6px 14px" }}>
@@ -314,13 +314,13 @@ export default function CustomerDetailPage() {
         </div>
 
         {client.positions.length === 0 ? (
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "15px", color: "var(--text-muted)", margin: 0 }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-muted)", margin: 0 }}>
             {t.noPositions}
           </p>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
             {client.positions.map((pos) => {
-              const sc = STATUS_COLOR[pos.status];
+              const sc = STATUS_COLOR[pos.status] ?? STATUS_COLOR.open;
               return (
                 <Link
                   key={pos.id}
@@ -335,18 +335,18 @@ export default function CustomerDetailPage() {
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                     <span style={{
-                      fontFamily: "'Inter', sans-serif", fontSize: "11px", fontWeight: "700",
+                      fontFamily: "var(--font-body)", fontSize: "11px", fontWeight: "700",
                       textTransform: "uppercase", letterSpacing: "0.06em",
                       color: sc.color, background: sc.bg,
                       padding: "3px 8px", borderRadius: "6px",
                     }}>
                       {translations[lang].positions.statusLabel[pos.status]}
                     </span>
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "15px", fontWeight: "500", color: "var(--text-primary)" }}>
+                    <span style={{ fontFamily: "var(--font-body)", fontSize: "15px", fontWeight: "500", color: "var(--text-primary)" }}>
                       {pos.title}
                     </span>
                   </div>
-                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "var(--text-muted)" }}>
+                  <span style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-muted)" }}>
                     {t.candidateCount(pos.candidateCount)}
                   </span>
                 </Link>
@@ -362,7 +362,7 @@ export default function CustomerDetailPage() {
         padding: "24px 28px",
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)", margin: 0 }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)", margin: 0 }}>
             {t.contacts}
           </p>
           <button className="btn btn-primary" onClick={() => setShowContactModal(true)} style={{ fontSize: "13px", padding: "6px 14px" }}>
@@ -371,7 +371,7 @@ export default function CustomerDetailPage() {
         </div>
 
         {client.contacts.length === 0 ? (
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "15px", color: "var(--text-muted)" }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-muted)" }}>
             {t.noContacts}
           </p>
         ) : (
@@ -396,23 +396,23 @@ export default function CustomerDetailPage() {
                   ✕
                 </button>
                 <div>
-                  <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "15px", fontWeight: "700", color: "var(--navy)", margin: "0 0 2px" }}>
+                  <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", fontWeight: "700", color: "var(--navy)", margin: "0 0 2px" }}>
                     {contact.name}
                   </p>
                   {contact.title && (
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "var(--text-muted)", margin: 0 }}>
+                    <p style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-muted)", margin: 0 }}>
                       {contact.title}
                     </p>
                   )}
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                   {contact.email && (
-                    <a href={`mailto:${contact.email}`} style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--steel)", textDecoration: "none" }}>
+                    <a href={`mailto:${contact.email}`} style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--steel)", textDecoration: "none" }}>
                       ✉ {contact.email}
                     </a>
                   )}
                   {contact.phone && (
-                    <a href={`tel:${contact.phone}`} style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--steel)", textDecoration: "none" }}>
+                    <a href={`tel:${contact.phone}`} style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--steel)", textDecoration: "none" }}>
                       📞 {contact.phone}
                     </a>
                   )}
@@ -443,7 +443,7 @@ export default function CustomerDetailPage() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "24px 28px 20px", borderBottom: "1px solid var(--border)" }}>
-              <h3 style={{ fontFamily: "'Poppins', sans-serif", fontSize: "20px", fontWeight: "700", color: "var(--navy)", margin: 0 }}>
+              <h3 style={{ fontFamily: "var(--font-body)", fontSize: "20px", fontWeight: "700", color: "var(--navy)", margin: 0 }}>
                 {t.addContactTitle}
               </h3>
               <button onClick={() => setShowContactModal(false)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "20px", color: "var(--text-muted)", lineHeight: 1 }}>
@@ -459,7 +459,7 @@ export default function CustomerDetailPage() {
                 { key: "phone", label: t.contactPhone,  required: false },
               ] as const).map(({ key, label, required }) => (
                 <div key={key}>
-                  <label style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", fontWeight: "600", color: "var(--text-primary)", display: "block", marginBottom: "6px" }}>
+                  <label style={{ fontFamily: "var(--font-body)", fontSize: "13px", fontWeight: "600", color: "var(--text-primary)", display: "block", marginBottom: "6px" }}>
                     {label}{required && " *"}
                   </label>
                   <input
@@ -506,13 +506,13 @@ export default function CustomerDetailPage() {
             }}
           >
             <p style={{
-              fontFamily: "'Poppins', sans-serif", fontSize: "20px", fontWeight: "600",
+              fontFamily: "var(--font-body)", fontSize: "20px", fontWeight: "600",
               color: "var(--navy)", marginBottom: "10px",
             }}>
               {t.removeClientTitle}
             </p>
             <p style={{
-              fontFamily: "'Inter', sans-serif", fontSize: "15px", lineHeight: "1.6",
+              fontFamily: "var(--font-body)", fontSize: "15px", lineHeight: "1.6",
               color: "var(--text-secondary)", marginBottom: "28px",
             }}>
               {t.removeClientBody(client.name)}
@@ -525,7 +525,7 @@ export default function CustomerDetailPage() {
                 style={{
                   padding: "9px 20px", borderRadius: "8px", border: "none",
                   background: "var(--coral)", color: "#fff",
-                  fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: "600",
+                  fontFamily: "var(--font-body)", fontSize: "14px", fontWeight: "600",
                   cursor: "pointer", transition: "opacity 140ms ease",
                 }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.88"; }}

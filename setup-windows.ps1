@@ -70,10 +70,10 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "Installing PM2..." -ForegroundColor Yellow
 npm install -g pm2
 
-# ── 6. Start app with PM2 and save ────────────────────────────────────────────
-pm2 delete focus 2>$null
-$env:PORT = $Port
-pm2 start npm --name "focus" -- start
+# ── 6. Start both processes with PM2 and save ─────────────────────────────────
+pm2 delete focus-app 2>$null
+pm2 delete focus-scan 2>$null
+pm2 start ecosystem.config.cjs
 pm2 save
 
 # ── 7. Register auto-start via Task Scheduler ─────────────────────────────────

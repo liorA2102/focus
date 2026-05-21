@@ -69,8 +69,8 @@ export default function CustomersPage() {
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "28px" }}>
         <div>
-          <div className="accent-rule" style={{ marginBottom: "12px" }} />
-          <h2 style={{ fontFamily: "'Poppins', sans-serif", fontSize: "32px", fontWeight: "700", letterSpacing: "-0.5px", color: "var(--navy)", lineHeight: 1 }}>
+          <div className="accent-rule" style={{ marginBottom: "10px" }} />
+          <h2 style={{ fontFamily: "var(--font-body)", fontSize: "32px", fontWeight: 800, letterSpacing: "-0.5px", color: "var(--navy)", lineHeight: 1.1, margin: 0 }}>
             {t.title}
           </h2>
         </div>
@@ -107,14 +107,14 @@ export default function CustomersPage() {
                 <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: card.accent, borderRadius: "12px 12px 0 0" }} />
               )}
               <p style={{
-                fontFamily: "'Inter', sans-serif", fontSize: "11px", fontWeight: "600",
+                fontFamily: "var(--font-body)", fontSize: "11px", fontWeight: "600",
                 textTransform: "uppercase", letterSpacing: "0.06em",
                 color: isActive ? card.accent : "var(--text-muted)", marginBottom: "10px",
               }}>
                 {card.label}
               </p>
               <p style={{
-                fontFamily: "'Poppins', sans-serif", fontSize: "32px", fontWeight: "700",
+                fontFamily: "var(--font-body)", fontSize: "32px", fontWeight: "700",
                 lineHeight: 1, letterSpacing: "-1px",
                 color: isActive ? card.accent : loaded ? (card.value > 0 ? "var(--navy)" : "var(--text-muted)") : "var(--border)",
               }}>
@@ -128,10 +128,10 @@ export default function CustomersPage() {
       {/* Client grid */}
       {loaded && clients.length === 0 ? (
         <div style={{ textAlign: "center", padding: "80px 0" }}>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "20px", fontWeight: "600", color: "var(--navy)", marginBottom: "8px" }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "20px", fontWeight: "600", color: "var(--navy)", marginBottom: "8px" }}>
             {t.emptyTitle}
           </p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "15px", color: "var(--text-muted)", marginBottom: "24px" }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-muted)", marginBottom: "24px" }}>
             {t.emptySubtitle}
           </p>
           <button className="btn btn-primary" onClick={() => setShowModal(true)}>{t.emptyCta}</button>
@@ -176,18 +176,18 @@ export default function CustomersPage() {
                   <div style={{
                     width: "52px", height: "52px", borderRadius: "50%", flexShrink: 0,
                     background: "var(--navy)", display: "flex", alignItems: "center", justifyContent: "center",
-                    fontFamily: "'Poppins', sans-serif", fontSize: "18px", fontWeight: "700", color: "#fff",
+                    fontFamily: "var(--font-body)", fontSize: "18px", fontWeight: "700", color: "#fff",
                   }}>
                     {initials(c.name)}
                   </div>
                 )}
                 <div style={{ minWidth: 0 }}>
-                  <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "16px", fontWeight: "700", color: "var(--navy)", lineHeight: 1.2, marginBottom: "4px" }}>
+                  <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", fontWeight: "700", color: "var(--navy)", lineHeight: 1.2, marginBottom: "4px" }}>
                     {c.name}
                   </p>
                   {c.industry && (
                     <span style={{
-                      fontFamily: "'Inter', sans-serif", fontSize: "11px", fontWeight: "600",
+                      fontFamily: "var(--font-body)", fontSize: "11px", fontWeight: "600",
                       color: "var(--text-muted)", background: "var(--bg)",
                       border: "1px solid var(--border)", borderRadius: "6px", padding: "2px 8px",
                       textTransform: "uppercase", letterSpacing: "0.05em",
@@ -201,7 +201,7 @@ export default function CustomersPage() {
               {/* Tagline */}
               {c.tagline && (
                 <p style={{
-                  fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--text-secondary)",
+                  fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-secondary)",
                   lineHeight: 1.4, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", margin: 0,
                 }}>
                   {c.tagline}
@@ -209,7 +209,7 @@ export default function CustomersPage() {
               )}
 
               {/* Stats */}
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "var(--text-muted)", margin: 0 }}>
+              <p style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-muted)", margin: 0 }}>
                 {c.openPositions} {t.openPositions.toLowerCase()} · {c.contactCount} {t.contacts.toLowerCase()}
               </p>
             </Link>

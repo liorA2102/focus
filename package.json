@@ -9,23 +9,28 @@
     "lint": "eslint",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:migrate-clients": "tsx src/db/migrate-clients.ts",
-    "setup": "npm install && npm run db:migrate"
+    "setup": "npm install && npm run db:migrate",
+    "scan": "tsx --tsconfig tsconfig.scripts.json --env-file .env.local scripts/scan-and-match.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.0",
+    "@libsql/client": "^0.17.3",
+    "@types/mailparser": "^3.4.6",
     "better-sqlite3": "^12.9.0",
-    "playwright": "^1.49.0",
     "drizzle-orm": "^0.45.2",
+    "imapflow": "^1.3.3",
+    "mailparser": "^3.9.8",
     "mammoth": "^1.12.0",
     "next": "^16.2.4",
     "pdf-parse": "^2.4.5",
+    "playwright": "^1.49.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "tsx": "^4.21.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
     "@playwright/test": "^1.49.0",
+    "@tailwindcss/postcss": "^4",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/pdf-parse": "^1.1.5",

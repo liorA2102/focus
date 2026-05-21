@@ -35,6 +35,20 @@ export async function POST(req: NextRequest) {
     // ── Parse with Claude ──
     const parsed = await parseCV(text);
 
+    // ── Deduplication check ──
+    const parsedName = (parsed.fullName ?? "").trim();
+    if (parsedName) {
+      const existing = await db.query.candidates.findFirst({
+        where: eq(candidates.fullName, parsedName),
+      });
+      if (existing) {
+        return NextResponse.json(
+          { error: "duplicate", message: `A candidate named "${existing.fullName}" already exists (ID ${existing.id}).` },
+          { status: 409 }
+        );
+      }
+    }
+
     // ── Save candidate ──
     const [candidate] = await db
       .insert(candidates)
@@ -44,12 +58,13 @@ export async function POST(req: NextRequest) {
         phone:           parsed.phone           ?? null,
         currentTitle:    parsed.currentTitle    ?? null,
         yearsExperience: parsed.yearsExperience ?? null,
-        skills:          JSON.stringify(parsed.skills    ?? []),
-        industries:      JSON.stringify(parsed.industries ?? []),
-        location:        parsed.location        ?? null,
-        summary:         parsed.summary         ?? null,
-        summaryHe:       parsed.summaryHe       ?? null,
-        cvPath:          filePath,
+        skills:             JSON.stringify(parsed.skills            ?? []),
+        industries:         JSON.stringify(parsed.industries         ?? []),
+        location:           parsed.location                         ?? null,
+        summary:            parsed.summary                          ?? null,
+        summaryHe:          parsed.summaryHe                        ?? null,
+        employmentHistory:  JSON.stringify(parsed.employmentHistory  ?? []),
+        cvPath:             filePath,
         source:          "manual",
       })
       .returning();

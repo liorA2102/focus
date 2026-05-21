@@ -29,6 +29,27 @@
       "when": 1745600000000,
       "tag": "0003_add_jobmaster_url",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1746614400000,
+      "tag": "0004_add_job_source_url",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1746748800000,
+      "tag": "0005_add_employment_history",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1746835200000,
+      "tag": "0006_source_email_to_jobmaster",
+      "breakpoints": true
     }
   ]
 }

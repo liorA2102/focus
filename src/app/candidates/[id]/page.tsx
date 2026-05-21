@@ -30,7 +30,7 @@ type Candidate = {
   summary: string | null;
   summaryHe: string | null;
   cvPath: string | null;
-  source: "jobmaster" | "linkedin" | "manual";
+  source: "jobmaster" | "linkedin" | "manual" | "website";
   createdAt: string;
   matches: MatchWithPosition[];
 };
@@ -53,6 +53,7 @@ const SOURCE_COLORS: Record<string, { color: string; bg: string }> = {
   manual:    { color: "var(--text-muted)", bg: "var(--light-gray)"  },
   jobmaster: { color: "var(--steel)",      bg: "var(--steel-light)" },
   linkedin:  { color: "#0A66C2",           bg: "#E8F3FF"            },
+  website:   { color: "#7C3AED",           bg: "#EDE9FE"            },
 };
 
 export default function CandidateDetailPage() {
@@ -98,7 +99,7 @@ export default function CandidateDetailPage() {
           direction: "ltr" as const,
           display: "inline-flex", alignItems: "center", gap: "6px",
           color: "var(--text-muted)", fontSize: "14px", textDecoration: "none",
-          marginBottom: "20px", fontFamily: "'Inter', sans-serif",
+          marginBottom: "20px", fontFamily: "var(--font-body)",
           transition: "color 140ms ease",
         }}
       >
@@ -116,7 +117,7 @@ export default function CandidateDetailPage() {
             width: "60px", height: "60px", borderRadius: "50%", flexShrink: 0,
             background: "var(--navy-light)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontFamily: "'Poppins', sans-serif", fontWeight: "700", fontSize: "20px",
+            fontFamily: "var(--font-body)", fontWeight: "700", fontSize: "20px",
             color: "var(--navy)",
           }}>
             {initials}
@@ -125,12 +126,12 @@ export default function CandidateDetailPage() {
           {/* Name + title + meta */}
           <div style={{ flex: 1, minWidth: 0 }}>
             <h2 style={{
-              fontFamily: "'Poppins', sans-serif", fontSize: "24px", fontWeight: "600",
+              fontFamily: "var(--font-body)", fontSize: "24px", fontWeight: "600",
               color: "var(--navy)", letterSpacing: "-0.3px", marginBottom: "4px",
             }}>
               {candidate.fullName}
             </h2>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "15px", color: "var(--text-secondary)", marginBottom: "8px" }}>
+            <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--text-secondary)", marginBottom: "8px" }}>
               {candidate.currentTitle ?? "—"}
               {candidate.yearsExperience != null && (
                 <span style={{ color: "var(--text-muted)", marginInlineStart: "8px" }}>
@@ -140,14 +141,14 @@ export default function CandidateDetailPage() {
             </p>
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
               {candidate.location && (
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "var(--text-muted)" }}>
+                <span style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-muted)" }}>
                   📍 {candidate.location}
                 </span>
               )}
               <span style={{
                 fontSize: "11px", fontWeight: "600", padding: "2px 8px", borderRadius: "4px",
                 color: srcCfg.color, background: srcCfg.bg,
-                fontFamily: "'Inter', sans-serif", textTransform: "uppercase", letterSpacing: "0.04em",
+                fontFamily: "var(--font-body)", textTransform: "uppercase", letterSpacing: "0.04em",
               }}>
                 {srcLabel}
               </span>
@@ -165,7 +166,7 @@ export default function CandidateDetailPage() {
                   background: "var(--surface)", border: "1.5px solid var(--border)",
                   borderRadius: "8px", color: "var(--text-secondary)",
                   fontSize: "13px", fontWeight: "500",
-                  textDecoration: "none", fontFamily: "'Inter', sans-serif",
+                  textDecoration: "none", fontFamily: "var(--font-body)",
                   transition: "border-color 140ms ease, color 140ms ease",
                   cursor: "pointer",
                 }}
@@ -188,7 +189,7 @@ export default function CandidateDetailPage() {
         {(candidate.email || candidate.phone) && (
           <div style={{ borderTop: "1px solid var(--border)", paddingTop: "16px" }}>
             <p style={{
-              fontFamily: "'Inter', sans-serif", fontSize: "11px", fontWeight: "600",
+              fontFamily: "var(--font-body)", fontSize: "11px", fontWeight: "600",
               textTransform: "uppercase", letterSpacing: "0.06em",
               color: "var(--text-muted)", marginBottom: "8px",
             }}>
@@ -198,7 +199,7 @@ export default function CandidateDetailPage() {
               {candidate.email && (
                 <a
                   href={`mailto:${candidate.email}`}
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--steel)", textDecoration: "none" }}
+                  style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--steel)", textDecoration: "none" }}
                 >
                   ✉ {candidate.email}
                 </a>
@@ -206,7 +207,7 @@ export default function CandidateDetailPage() {
               {candidate.phone && (
                 <a
                   href={`tel:${candidate.phone}`}
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--steel)", textDecoration: "none" }}
+                  style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--steel)", textDecoration: "none" }}
                 >
                   📞 {candidate.phone}
                 </a>
@@ -229,13 +230,13 @@ export default function CandidateDetailPage() {
               borderRadius: "12px", padding: "24px 28px",
             }}>
               <h3 style={{
-                fontFamily: "'Poppins', sans-serif", fontSize: "18px", fontWeight: "600",
+                fontFamily: "var(--font-body)", fontSize: "18px", fontWeight: "600",
                 color: "var(--navy)", marginBottom: "14px",
               }}>
                 {t.summary}
               </h3>
               <p style={{
-                fontFamily: "'Inter', sans-serif", fontSize: "15px",
+                fontFamily: "var(--font-body)", fontSize: "15px",
                 lineHeight: "1.75", color: "var(--text-primary)", whiteSpace: "pre-wrap",
               }}>
                 {(lang === "he" ? candidate.summaryHe : null) ?? candidate.summary}
@@ -250,7 +251,7 @@ export default function CandidateDetailPage() {
               borderRadius: "12px", padding: "24px 28px",
             }}>
               <h3 style={{
-                fontFamily: "'Poppins', sans-serif", fontSize: "18px", fontWeight: "600",
+                fontFamily: "var(--font-body)", fontSize: "18px", fontWeight: "600",
                 color: "var(--navy)", marginBottom: "14px",
               }}>
                 {t.skills}
@@ -258,7 +259,7 @@ export default function CandidateDetailPage() {
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                 {skills.map((s) => (
                   <span key={s} style={{
-                    fontFamily: "'Inter', sans-serif", fontSize: "13px",
+                    fontFamily: "var(--font-body)", fontSize: "13px",
                     color: "var(--text-primary)", background: "var(--bg)",
                     border: "1.5px solid var(--border)", padding: "5px 12px",
                     borderRadius: "6px",
@@ -277,7 +278,7 @@ export default function CandidateDetailPage() {
               borderRadius: "12px", padding: "24px 28px",
             }}>
               <h3 style={{
-                fontFamily: "'Poppins', sans-serif", fontSize: "18px", fontWeight: "600",
+                fontFamily: "var(--font-body)", fontSize: "18px", fontWeight: "600",
                 color: "var(--navy)", marginBottom: "14px",
               }}>
                 {t.industries}
@@ -285,7 +286,7 @@ export default function CandidateDetailPage() {
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                 {industries.map((ind) => (
                   <span key={ind} style={{
-                    fontFamily: "'Inter', sans-serif", fontSize: "13px",
+                    fontFamily: "var(--font-body)", fontSize: "13px",
                     color: "var(--steel)", background: "var(--steel-light)",
                     border: "1px solid var(--steel)22", padding: "5px 12px",
                     borderRadius: "6px",
@@ -305,12 +306,12 @@ export default function CandidateDetailPage() {
         }}>
           <div style={{ padding: "18px 20px", borderBottom: "1px solid var(--border)" }}>
             <h3 style={{
-              fontFamily: "'Poppins', sans-serif", fontSize: "16px", fontWeight: "600",
+              fontFamily: "var(--font-body)", fontSize: "16px", fontWeight: "600",
               color: "var(--navy)",
               display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
               {t.matchedRoles}
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", fontWeight: "400", color: "var(--text-muted)" }}>
+              <span style={{ fontFamily: "var(--font-body)", fontSize: "13px", fontWeight: "400", color: "var(--text-muted)" }}>
                 {activeMatches.length}
               </span>
             </h3>
@@ -345,7 +346,7 @@ export default function CandidateDetailPage() {
               <div style={{
                 padding: "12px 20px",
                 borderTop: "1px solid var(--border)",
-                fontFamily: "'Inter', sans-serif", fontSize: "13px",
+                fontFamily: "var(--font-body)", fontSize: "13px",
                 color: "var(--text-muted)", textAlign: "center",
               }}>
                 {td.rejected(rejectedMatches.length)}
@@ -390,7 +391,7 @@ function MatchRow({
             onClick={(e) => e.stopPropagation()}
             style={{
               flex: 1, minWidth: 0,
-              fontFamily: "'Inter', sans-serif", fontSize: "13px", fontWeight: "600",
+              fontFamily: "var(--font-body)", fontSize: "13px", fontWeight: "600",
               color: "var(--navy)", textDecoration: "none",
               overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
             }}
@@ -401,14 +402,14 @@ function MatchRow({
             ▼
           </span>
         </div>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "var(--text-secondary)" }}>
+        <p style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: "var(--text-secondary)" }}>
           {match.position.client}
         </p>
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
           <span style={{
             fontSize: "11px", fontWeight: "600", padding: "2px 7px", borderRadius: "4px",
             color: strCfg.color, background: strCfg.bg,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "var(--font-body)",
           }}>
             {strengthLabel}
           </span>
@@ -416,7 +417,7 @@ function MatchRow({
             <span style={{
               fontSize: "11px", fontWeight: "600", padding: "2px 7px", borderRadius: "4px",
               color: statusCfg.color, background: statusCfg.bg,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "var(--font-body)",
             }}>
               {statusLabel}
             </span>
@@ -430,7 +431,7 @@ function MatchRow({
           borderTop: "1px solid var(--border)",
         }}>
           <p style={{
-            fontFamily: "'Inter', sans-serif", fontSize: "13px",
+            fontFamily: "var(--font-body)", fontSize: "13px",
             lineHeight: "1.6", color: "var(--text-secondary)",
             paddingTop: "12px",
           }}>
@@ -440,7 +441,7 @@ function MatchRow({
             href={`/positions/${match.position.id}`}
             style={{
               display: "inline-block", marginTop: "8px",
-              fontFamily: "'Inter', sans-serif", fontSize: "12px",
+              fontFamily: "var(--font-body)", fontSize: "12px",
               color: "var(--steel)", textDecoration: "none",
             }}
           >

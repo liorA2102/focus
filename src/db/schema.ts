@@ -54,12 +54,15 @@ export const candidates = sqliteTable("candidates", {
   skills:          text("skills"),     // JSON array
   industries:      text("industries"), // JSON array
   location:        text("location"),
-  summary:         text("summary"),    // AI-generated summary (English)
-  summaryHe:       text("summary_he"), // AI-generated summary (Hebrew)
-  cvPath:          text("cv_path"),    // local file path
-  source: text("source", { enum: ["jobmaster", "linkedin", "manual"] })
+  summary:           text("summary"),            // AI-generated summary (English)
+  summaryHe:         text("summary_he"),          // AI-generated summary (Hebrew)
+  employmentHistory: text("employment_history"),  // JSON array of { company, title, startDate, endDate }
+  cvPath:            text("cv_path"),             // local file path
+  source: text("source", { enum: ["jobmaster", "linkedin", "manual", "website"] })
     .notNull()
     .default("manual"),
+  appliedPositionId: integer("applied_position_id").references(() => positions.id, { onDelete: "set null" }),
+  jobSourceUrl: text("job_source_url"),
   createdAt: text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
 });
 
@@ -117,4 +120,16 @@ export const linkedinPosts = sqliteTable("linkedin_posts", {
   linkedinUrl: text("linkedin_url"),
   postedAt:   text("posted_at"),
   createdAt:  text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
+});
+
+export const appSettings = sqliteTable("app_settings", {
+  key:   text("key").primaryKey(),
+  value: text("value").notNull(),
+});
+
+export const linkedinImages = sqliteTable("linkedin_images", {
+  id:        integer("id").primaryKey({ autoIncrement: true }),
+  filename:  text("filename").notNull(),
+  label:     text("label"),
+  createdAt: text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
 });

@@ -7,10 +7,23 @@ export async function extractCVText(buffer: Buffer, filename: string): Promise<s
   const ext = filename.split(".").pop()?.toLowerCase();
 
   if (ext === "pdf") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pdfParse = ((await import("pdf-parse")) as any).default ?? (await import("pdf-parse"));
-    const data = await pdfParse(buffer);
-    return data.text;
+    // Use Claude's native PDF reading — handles both text and scanned/image PDFs,
+    // and avoids pdf-parse which can block the event loop indefinitely.
+    const msg = await client.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 4096,
+      messages: [{
+        role: "user",
+        content: [
+          {
+            type: "document",
+            source: { type: "base64", media_type: "application/pdf", data: buffer.toString("base64") },
+          },
+          { type: "text", text: "Extract all text from this CV/resume document. Return the raw text only, no commentary." },
+        ],
+      }],
+    });
+    return (msg.content[0] as { text: string }).text;
   }
 
   if (ext === "docx" || ext === "doc") {
@@ -26,8 +39,8 @@ export async function extractCVText(buffer: Buffer, filename: string): Promise<s
 /* ── Parse CV text → structured candidate data ── */
 export async function parseCV(text: string) {
   const msg = await client.messages.create({
-    model: "claude-opus-4-6",
-    max_tokens: 1024,
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 2048,
     messages: [{
       role: "user",
       content: `You are parsing a CV/resume. Extract information and return ONLY valid JSON, no markdown.
@@ -43,11 +56,65 @@ Return this exact shape:
   "industries": ["array of industries the person has worked in"],
   "location": "city/country or null",
   "summary": "2-3 sentence professional summary highlighting strengths (in English)",
-  "summaryHe": "same summary translated to Hebrew"
+  "summaryHe": "same summary translated to Hebrew",
+  "employmentHistory": [
+    {
+      "company": "Company name",
+      "title": "Job title",
+      "startDate": "YYYY-MM or YYYY or null",
+      "endDate": "YYYY-MM or YYYY or null (null if current role)",
+      "description": "1 sentence describing responsibilities, or null"
+    }
+  ]
 }
+
+List employmentHistory in reverse chronological order (most recent first). Include all roles found.
 
 CV text:
 ${text.slice(0, 6000)}`,
+    }],
+  });
+
+  const raw = (msg.content[0] as { text: string }).text.trim();
+  const json = raw.replace(/^```json?\s*/i, "").replace(/\s*```$/, "");
+  return JSON.parse(json);
+}
+
+/* ── Polish imported position text ── */
+export async function polishPosition(
+  description: string | null,
+  requirements: string | null
+): Promise<{ description: string; requirements: string }> {
+  const msg = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 2048,
+    messages: [{
+      role: "user",
+      content: `You are editing a job posting that was copy-pasted from a recruitment system. Fix the formatting and punctuation without changing the meaning. The text is in Hebrew — keep it in Hebrew.
+
+Rules:
+- Fix double dots (..) → single dot (.)
+- Replace non-breaking spaces and stray whitespace with regular spaces
+- Remove the job title if it appears redundantly at the start of the description
+- Break the description into 2-4 short readable paragraphs. Each paragraph should be a coherent topic.
+- If the description contains an embedded numbered or bulleted list (like "1. ... · ..."), extract those items into the requirements section instead and keep the description as prose only.
+- Format requirements as individual bullet lines — one requirement per line, no bullet prefix (the caller adds "• ").
+- Split concatenated requirements that are all in one long paragraph into separate lines.
+- Fix spacing around slashes where needed (e.g. "מהנדס/ת" is fine, but "חובה / יתרון" should stay natural).
+- Remove duplicate information between description and requirements.
+- Do not add, invent, or translate any content. Only reformat what exists.
+
+Return ONLY valid JSON, no markdown:
+{
+  "description": "cleaned description with paragraph breaks using \\n\\n",
+  "requirements": "one requirement per line, plain text, using \\n as separator"
+}
+
+--- DESCRIPTION ---
+${description ?? ""}
+
+--- REQUIREMENTS ---
+${requirements ?? ""}`,
     }],
   });
 
@@ -73,7 +140,7 @@ export async function matchCandidateToPosition(
   }
 ): Promise<{ strength: "strong" | "possible" | "weak"; explanation: string; explanationHe: string }> {
   const msg = await client.messages.create({
-    model: "claude-opus-4-6",
+    model: "claude-haiku-4-5-20251001",
     max_tokens: 256,
     messages: [{
       role: "user",

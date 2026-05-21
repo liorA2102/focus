@@ -1,7 +1,8 @@
 import { chromium } from "playwright";
 
 const POST_URL = "https://cv.jobmaster.co.il/code/misrot/misra-add.asp";
-const SUCCESS_URL_PATTERN = /misrot-list\.asp/;
+// After submitting, JobMaster redirects back to misra-add.asp with jobnum= in the query string
+const SUCCESS_URL_PATTERN = /misra-add\.asp.*jobnum=/;
 
 // How long Jacob has to complete & submit the form manually (5 minutes)
 const MANUAL_TIMEOUT_MS = 5 * 60 * 1_000;
@@ -77,19 +78,21 @@ export async function publishToJobMaster(position: {
     console.log("[jobmaster] Pre-fill done — waiting for Jacob to complete and submit (up to 5 min)…");
 
     await page.waitForURL(SUCCESS_URL_PATTERN, { timeout: MANUAL_TIMEOUT_MS });
-    await page.waitForTimeout(1_500); // let the list render
 
-    // Try to grab the URL of the most recently published job (first row in the list)
-    const jobUrl = await page.evaluate(() => {
-      const links = Array.from(document.querySelectorAll("a[href*='misra']")) as HTMLAnchorElement[];
-      return links[0]?.href ?? null;
-    }) ?? page.url();
-
+    const redirectUrl = page.url();
+    const jobNum = new URL(redirectUrl).searchParams.get("jobnum");
+    const jobUrl = jobNum
+      ? `https://cv.jobmaster.co.il/code/misrot/misrot-list.asp?jobNum=${jobNum}`
+      : redirectUrl;
     console.log("[jobmaster] Published! Job URL:", jobUrl);
     return { success: true, jobUrl };
   } catch (err) {
     if (SUCCESS_URL_PATTERN.test(page.url())) {
-      return { success: true, jobUrl: page.url() };
+      const jobNum = new URL(page.url()).searchParams.get("jobnum");
+      const jobUrl = jobNum
+        ? `https://cv.jobmaster.co.il/code/misrot/misrot-list.asp?jobNum=${jobNum}`
+        : page.url();
+      return { success: true, jobUrl };
     }
     console.error("[jobmaster] Failed:", String(err));
     return { success: false, error: String(err) };

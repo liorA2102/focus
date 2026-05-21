@@ -14,7 +14,9 @@ export default function Sidebar() {
     { href: "/positions",  label: t.positions,  icon: <GridIcon />     },
     { href: "/customers",  label: t.customers,  icon: <BuildingIcon /> },
     { href: "/candidates", label: t.candidates, icon: <PersonIcon />   },
-    { href: "/linkedin",   label: t.linkedin,   icon: <PenIcon />      },
+    { href: "/email",      label: t.emailInbox, icon: <InboxIcon />    },
+    { href: "/linkedin",          label: t.linkedin, icon: <PenIcon />     },
+    { href: "/linkedin/gallery",  label: t.gallery,  icon: <GalleryIcon /> },
   ];
 
   const h = new Date().getHours();
@@ -36,10 +38,13 @@ export default function Sidebar() {
 
       {/* Logo */}
       <div style={{ padding: "4px 8px 28px" }}>
-        <div style={{ fontFamily: "'Arial', sans-serif", fontSize: "17px", fontWeight: 700, color: "#FFFFFF", lineHeight: 1 }}>
-          קבוצת פוקוס
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div style={{ width: "5px", height: "20px", background: "var(--coral)", borderRadius: "3px", flexShrink: 0 }} />
+          <div style={{ fontFamily: "var(--font-body)", fontSize: "16px", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2 }}>
+            קבוצת פוקוס
+          </div>
         </div>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.05em", marginTop: "6px" }}>
+        <div style={{ fontFamily: "var(--font-body)", fontSize: "10px", color: "rgba(255,255,255,0.28)", letterSpacing: "0.07em", marginTop: "8px", textTransform: "uppercase" }}>
           {t.recruiterDesk}
         </div>
       </div>
@@ -47,7 +52,9 @@ export default function Sidebar() {
       {/* Nav */}
       <nav style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
         {nav.map(({ href, label, icon }) => {
-          const active = pathname.startsWith(href);
+          const active = href === "/linkedin"
+            ? pathname === "/linkedin"
+            : pathname.startsWith(href);
           return (
             <Link
               key={href}
@@ -59,12 +66,12 @@ export default function Sidebar() {
                 padding: "10px 12px",
                 borderRadius: "8px",
                 textDecoration: "none",
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "var(--font-body)",
                 fontSize: "14px",
                 fontWeight: active ? "600" : "400",
                 color: active ? "#FFFFFF" : "var(--sidebar-text)",
                 background: active ? "var(--sidebar-active-bg)" : "transparent",
-                borderInlineStart: `2px solid ${active ? "var(--coral)" : "transparent"}`,
+                borderInlineStart: `3px solid ${active ? "var(--coral)" : "transparent"}`,
                 transition: "background 130ms ease, color 130ms ease, border-color 130ms ease",
                 userSelect: "none",
               }}
@@ -86,10 +93,10 @@ export default function Sidebar() {
 
       {/* Bottom */}
       <div style={{ marginTop: "auto", borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: "16px", paddingInlineStart: "4px" }}>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(255,255,255,0.32)", marginBottom: "2px" }}>
+        <div style={{ fontFamily: "var(--font-body)", fontSize: "11px", color: "rgba(255,255,255,0.32)", marginBottom: "2px" }}>
           {greeting},
         </div>
-        <div style={{ fontFamily: "'Poppins', sans-serif", fontSize: "14px", fontWeight: "600", color: "rgba(255,255,255,0.80)" }}>
+        <div style={{ fontFamily: "var(--font-body)", fontSize: "14px", fontWeight: "600", color: "rgba(255,255,255,0.80)" }}>
           Jacob
         </div>
 
@@ -118,7 +125,7 @@ export default function Sidebar() {
                 fontSize: "12px",
                 fontWeight: lang === l ? "700" : "400",
                 cursor: "pointer",
-                fontFamily: l === "he" ? "'Arial', sans-serif" : "'Inter', sans-serif",
+                fontFamily: l === "he" ? "var(--font-body)" : "var(--font-body)",
                 letterSpacing: lang === l ? "0.03em" : 0,
                 transition: "all 150ms ease",
               }}
@@ -131,7 +138,7 @@ export default function Sidebar() {
         {/* Brand tagline */}
         <div style={{
           marginTop: "16px",
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "var(--font-body)",
           fontSize: "10px",
           color: "rgba(255,255,255,0.22)",
           letterSpacing: "0.03em",
@@ -182,6 +189,26 @@ function PenIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <path d="M11 2l3 3-8 8H3v-3L11 2z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function InboxIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M1 6h4l1.5 2h3L11 6h4" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function GalleryIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="1" width="6" height="5" rx="1.2" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="9" y="1" width="6" height="5" rx="1.2" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="1" y="8" width="6" height="5" rx="1.2" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="9" y="8" width="6" height="5" rx="1.2" stroke="currentColor" strokeWidth="1.6" />
     </svg>
   );
 }
