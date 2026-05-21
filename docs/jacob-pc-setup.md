@@ -27,8 +27,9 @@ This script will:
 2. Install all dependencies
 3. Run the database migration
 4. Build the app
-5. Install PM2 and set it to start automatically on Windows login
-6. Open the app in Chrome at `http://localhost:3001`
+5. Install PM2 and start both the app and the background email scanner
+6. Register PM2 to auto-start on Windows login
+7. Register a weekly silent auto-update (Sundays 7am — Jacob sees nothing)
 
 The script takes about 2–3 minutes on a normal connection.
 
@@ -139,21 +140,17 @@ pm2 logs focus-scan --lines 30
 
 ## Updating the App
 
-Whenever there's a new version, run the same install command again — it preserves `.env.local` and the database automatically:
+**Updates happen automatically** — the setup script registers a Windows Task Scheduler job that runs every Sunday at 7am silently in the background. Jacob sees nothing. If the PC was off on Sunday, it runs quietly the next time he logs in.
+
+### Force an immediate update (via TeamViewer)
+
+Open PowerShell in `C:\Focus` and run:
 
 ```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; Invoke-WebRequest -Uri "https://raw.githubusercontent.com/liorA2102/focus/main/setup-windows.ps1" -OutFile "$env:TEMP\setup.ps1"; & "$env:TEMP\setup.ps1"
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\update-windows.ps1
 ```
 
-Or manually via PowerShell in `C:\Focus`:
-
-```powershell
-cd C:\Focus
-git pull        # if git is installed
-npm install
-npm run build
-pm2 restart focus
-```
+This downloads the latest version from GitHub, runs any new migrations, rebuilds, and restarts the app. Takes ~2 minutes. `.env.local` and the database are preserved automatically.
 
 ---
 
@@ -185,5 +182,5 @@ pm2 logs focus-scan --lines 50   # scanner logs
 cd C:\Focus
 del focus.db
 npm run db:migrate
-pm2 restart focus
+pm2 restart focus-app
 ```
