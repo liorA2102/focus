@@ -81,7 +81,6 @@ Write-Host "Registering auto-start on login..." -ForegroundColor Yellow
 
 @"
 Set-Location C:\Focus
-`$env:PORT = $Port
 pm2 resurrect
 "@ | Set-Content "$AppDir\start-focus.ps1"
 
@@ -95,11 +94,29 @@ Register-ScheduledTask `
     -Action $Action -Trigger $Trigger -Settings $Settings `
     -RunLevel Highest -Force | Out-Null
 
+# ── 8. Register weekly silent auto-update ─────────────────────────────────────
+Write-Host "Registering weekly auto-update (Sundays 7am)..." -ForegroundColor Yellow
+
+$UpdateAction   = New-ScheduledTaskAction `
+    -Execute "powershell.exe" `
+    -Argument "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$AppDir\update-windows.ps1`"" `
+    -WorkingDirectory $AppDir
+# Run every Sunday at 7:00 AM; if the PC was off, run at next login instead
+$UpdateTrigger  = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Sunday -At "07:00"
+$UpdateSettings = New-ScheduledTaskSettingsSet `
+    -ExecutionTimeLimit (New-TimeSpan -Minutes 30) `
+    -StartWhenAvailable          # runs at next login if PC was off at 7am
+Register-ScheduledTask `
+    -TaskName "FocusAppUpdate" `
+    -Action $UpdateAction -Trigger $UpdateTrigger -Settings $UpdateSettings `
+    -RunLevel Highest -Force | Out-Null
+
 Write-Host ""
 Write-Host "=== Done! ===" -ForegroundColor Green
 Write-Host ""
 Write-Host "Focus is running at: http://localhost:$Port" -ForegroundColor Cyan
 Write-Host "It will start automatically every time Jacob logs in."
+Write-Host "It will silently update itself every Sunday at 7am."
 Write-Host ""
 Write-Host "Bookmark http://localhost:$Port in Jacob's browser."
 Write-Host ""
