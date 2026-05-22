@@ -9,6 +9,7 @@
     "lint": "eslint",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:migrate-clients": "tsx src/db/migrate-clients.ts",
+    "db:export-templates": "tsx src/db/export-templates.ts",
     "setup": "npm install && npm run db:migrate",
     "scan": "tsx --tsconfig tsconfig.scripts.json --env-file .env.local scripts/scan-and-match.ts"
   },
