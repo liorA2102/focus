@@ -1,20 +1,20 @@
 /* Focus LinkedIn Extension styles */
 
 .focus-btn {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: none;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.22);
   cursor: pointer;
-  padding: 0;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
   transition: box-shadow 150ms ease, transform 150ms ease;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .focus-btn:hover {
