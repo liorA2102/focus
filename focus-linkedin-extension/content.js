@@ -41,6 +41,9 @@ function scanForEditors() {
 
 // ── Button ─────────────────────────────────────────────────────────────────
 function attachButton(editor) {
+  const postArticle = findPostArticle(editor);
+  console.log("[Focus] attachButton — post found:", !!postArticle, postArticle?.dataset?.urn || postArticle?.className?.substring?.(0, 60) || "");
+
   const btn = document.createElement("button");
   btn.className = "focus-btn";
   btn.title = "Focus – Insert template";
@@ -53,7 +56,7 @@ function attachButton(editor) {
       closeDropdown();
     } else {
       closeDropdown();
-      openDropdown(editor, btn);
+      openDropdown(editor, btn, postArticle);
     }
   });
 
@@ -114,7 +117,7 @@ function positionBtn(btn, editor) {
 }
 
 // ── Dropdown ───────────────────────────────────────────────────────────────
-function openDropdown(editor, btn) {
+function openDropdown(editor, btn, postArticle) {
   const dd = document.createElement("div");
   dd.className = "focus-dropdown";
 
@@ -160,7 +163,7 @@ function openDropdown(editor, btn) {
       item.appendChild(info);
       item.addEventListener("click", (e) => {
         e.stopPropagation();
-        selectTemplate(tmpl, editor);
+        selectTemplate(tmpl, editor, postArticle);
       });
       dd.appendChild(item);
     });
@@ -174,7 +177,7 @@ function openDropdown(editor, btn) {
     e.stopPropagation();
     loadTemplates(true);
     closeDropdown();
-    setTimeout(() => openDropdown(editor, btn), 400);
+    setTimeout(() => openDropdown(editor, btn, postArticle), 400);
   });
   dd.appendChild(refreshBtn);
 
@@ -206,14 +209,10 @@ function closeDropdown() {
 }
 
 // ── Template selection ─────────────────────────────────────────────────────
-function selectTemplate(tmpl, editor) {
+function selectTemplate(tmpl, editor, postArticle) {
   closeDropdown();
 
-  const post = findPostArticle(editor);
-  console.log("[Focus] post article found:", !!post, post);
-
-  const leadData = extractLeadData(post, tmpl.title);
-  console.log("[Focus] lead data:", leadData);
+  const leadData = extractLeadData(postArticle, tmpl.title);
 
   if (leadData) {
     chrome.runtime.sendMessage({ type: "SAVE_LEAD", payload: leadData }, (res) => {
@@ -222,7 +221,7 @@ function selectTemplate(tmpl, editor) {
   }
 
   injectText(editor, tmpl.body);
-  if (tmpl.imageFilename) injectImage(tmpl.imageFilename, post || document.body);
+  if (tmpl.imageFilename) injectImage(tmpl.imageFilename, postArticle || document.body);
   showToast(leadData ? `✓ ${leadData.name} added as lead` : "✓ Template inserted");
 }
 
