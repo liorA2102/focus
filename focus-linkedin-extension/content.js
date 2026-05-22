@@ -46,15 +46,6 @@ function attachButton(editor) {
   btn.title = "Focus – Insert template";
   btn.innerHTML = FOCUS_LOGO_SVG;
 
-  // Position fixed, anchored to editor's bottom-right corner
-  positionBtn(btn, editor);
-  document.body.appendChild(btn);
-
-  // Reposition on scroll/resize
-  const reposition = () => positionBtn(btn, editor);
-  window.addEventListener("scroll", reposition, { passive: true });
-  window.addEventListener("resize", reposition, { passive: true });
-
   btn.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -66,24 +57,60 @@ function attachButton(editor) {
     }
   });
 
+  // Try to inject into the emoji/image controls row so it sits alongside them
+  const injected = injectIntoControlsRow(btn, editor);
+
+  if (!injected) {
+    // Fallback: float beside the editor
+    positionBtn(btn, editor);
+    document.body.appendChild(btn);
+    const reposition = () => positionBtn(btn, editor);
+    window.addEventListener("scroll", reposition, { passive: true });
+    window.addEventListener("resize", reposition, { passive: true });
+  }
+
   // Remove button when editor leaves DOM
   const removalWatcher = new MutationObserver(() => {
     if (!document.body.contains(editor)) {
       btn.remove();
       closeDropdown();
-      window.removeEventListener("scroll", reposition);
-      window.removeEventListener("resize", reposition);
       removalWatcher.disconnect();
+    }
+    // Re-inject if React removed our button but editor is still there
+    if (document.body.contains(editor) && !document.body.contains(btn)) {
+      injectIntoControlsRow(btn, editor) || document.body.appendChild(btn);
     }
   });
   removalWatcher.observe(document.body, { childList: true, subtree: true });
 }
 
+function injectIntoControlsRow(btn, editor) {
+  // Walk up from the editor to find the container, then look for the emoji/image button row
+  let cur = editor.parentElement;
+  for (let i = 0; i < 10; i++) {
+    if (!cur || cur === document.body) break;
+    // LinkedIn puts emoji + image buttons in a div alongside the editor
+    const emojiBtn = cur.querySelector(
+      'button[aria-label*="moji"], button[aria-label*="GIF"], button[aria-label*="media"], button[aria-label*="image"], button[aria-label*="תמונה"], button[aria-label*="אמוג"]'
+    );
+    if (emojiBtn) {
+      const row = emojiBtn.closest('div, li, span');
+      if (row && row !== cur) {
+        row.insertBefore(btn, row.firstChild);
+        return true;
+      }
+    }
+    cur = cur.parentElement;
+  }
+  return false;
+}
+
 function positionBtn(btn, editor) {
   const rect = editor.getBoundingClientRect();
   if (!rect.width) return;
+  btn.style.position = "absolute";
   btn.style.top  = (rect.bottom - 38 + window.scrollY) + "px";
-  btn.style.left = (rect.right  - 38 + window.scrollX) + "px";
+  btn.style.left = (rect.right  + 6  + window.scrollX) + "px";
 }
 
 // ── Dropdown ───────────────────────────────────────────────────────────────
