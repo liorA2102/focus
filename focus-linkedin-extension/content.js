@@ -41,19 +41,7 @@ function scanForEditors() {
 
 // ── Button ─────────────────────────────────────────────────────────────────
 function attachButton(editor) {
-  // Diagnostic: dump ancestor chain so we can find the right selector
-  let _cur = editor, _chain = [];
-  for (let i = 0; i < 25 && _cur && _cur !== document.body; i++) {
-    const cls = typeof _cur.className === "string" ? _cur.className.trim().substring(0, 80) : "";
-    const urn = _cur.dataset?.urn || _cur.getAttribute?.("data-urn") || "";
-    const id  = _cur.dataset?.id  || _cur.getAttribute?.("data-id")  || "";
-    _chain.push(`[${i}] <${_cur.tagName.toLowerCase()}> cls="${cls}" urn="${urn}" id="${id}"`);
-    _cur = _cur.parentElement;
-  }
-  console.log("[Focus] ancestor chain:\n" + _chain.join("\n"));
-
   const postArticle = findPostArticle(editor);
-  console.log("[Focus] attachButton — post found:", !!postArticle);
 
   const btn = document.createElement("button");
   btn.className = "focus-btn";
@@ -226,9 +214,7 @@ function selectTemplate(tmpl, editor, postArticle) {
   const leadData = extractLeadData(postArticle, tmpl.title);
 
   if (leadData) {
-    chrome.runtime.sendMessage({ type: "SAVE_LEAD", payload: leadData }, (res) => {
-      console.log("[Focus] SAVE_LEAD response:", res, chrome.runtime.lastError);
-    });
+    chrome.runtime.sendMessage({ type: "SAVE_LEAD", payload: leadData });
   }
 
   injectText(editor, tmpl.body);
@@ -267,10 +253,11 @@ function injectImage(filename, scope) {
 function extractLeadData(post, templateTitle) {
   if (!post) return null;
 
-  // LinkedIn obfuscates class names — rely on href patterns and aria attributes instead
-  const authorLink =
-    post.querySelector('a[href*="linkedin.com/in/"]') ||
-    post.querySelector('a[href*="/in/"]');
+  // LinkedIn obfuscates class names — rely on href patterns and aria attributes instead.
+  // The first /in/ link is often the avatar (image, no text) — find the one with actual text.
+  const allProfileLinks = Array.from(post.querySelectorAll('a[href*="/in/"]'));
+  const authorLink = allProfileLinks.find(a => a.textContent?.trim().length > 0) ||
+                     allProfileLinks[0] || null;
 
   // Author name: first aria-hidden span inside the author link, or the link text itself
   const nameEl = authorLink?.querySelector('span[aria-hidden="true"]');
