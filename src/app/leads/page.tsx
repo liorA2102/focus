@@ -24,7 +24,6 @@ type Template = {
   title: string;
   body: string;
   imageFilename: string | null;
-  language: "he" | "en";
   createdAt: string;
 };
 
@@ -94,7 +93,6 @@ export default function LeadsPage() {
   const [formTitle, setFormTitle] = useState("");
   const [formBody, setFormBody] = useState("");
   const [formImage, setFormImage] = useState<string | null>(null);
-  const [formLang, setFormLang] = useState<"he" | "en">("he");
   const [formSaving, setFormSaving] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [deletingTemplate, setDeletingTemplate] = useState<number | null>(null);
@@ -117,7 +115,6 @@ export default function LeadsPage() {
     setFormTitle("");
     setFormBody("");
     setFormImage(null);
-    setFormLang("he");
     setShowForm(true);
   };
 
@@ -126,7 +123,6 @@ export default function LeadsPage() {
     setFormTitle(tmpl.title);
     setFormBody(tmpl.body);
     setFormImage(tmpl.imageFilename);
-    setFormLang(tmpl.language ?? "he");
     setShowForm(true);
   };
 
@@ -135,7 +131,7 @@ export default function LeadsPage() {
   const saveTemplate = async () => {
     if (!formTitle.trim() || !formBody.trim()) return;
     setFormSaving(true);
-    const payload = { title: formTitle.trim(), body: formBody.trim(), imageFilename: formImage, language: formLang };
+    const payload = { title: formTitle.trim(), body: formBody.trim(), imageFilename: formImage };
 
     if (editingTemplate) {
       const res = await fetch(`/api/comment-templates/${editingTemplate.id}`, {
@@ -168,15 +164,60 @@ export default function LeadsPage() {
     setDeletingTemplate(null);
   };
 
+  const exportTemplates = () => {
+    const data = templates.map(({ title, body, imageFilename }) => ({ title, body, imageFilename }));
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "focus-templates.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importTemplates = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text) as Array<{ title: string; body: string; imageFilename?: string }>;
+      let added = 0;
+      for (const tmpl of data) {
+        if (!tmpl.title || !tmpl.body) continue;
+        const res = await fetch("/api/comment-templates", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: tmpl.title, body: tmpl.body, imageFilename: tmpl.imageFilename ?? null }),
+        });
+        if (res.ok) { setTemplates((prev) => [...prev, await res.json()]); added++; }
+      }
+      alert(`${added} ${lang === "he" ? "תבניות יובאו" : "templates imported"}`);
+    } catch {
+      alert(lang === "he" ? "שגיאה בייבוא" : "Import failed — invalid file");
+    }
+    e.target.value = "";
+  };
+
   return (
     <div>
       {/* Header */}
       <PageHeader
         title={t.title}
         actions={tab === "templates" && !showForm ? (
-          <button onClick={openNewForm} className="btn btn-primary">
-            {t.newTemplate}
-          </button>
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            {templates.length > 0 && (
+              <button onClick={exportTemplates} style={ghostBtnStyle}>
+                {lang === "he" ? "⬇ יצוא" : "⬇ Export"}
+              </button>
+            )}
+            <label style={{ ...ghostBtnStyle, cursor: "pointer" }}>
+              {lang === "he" ? "⬆ ייבוא" : "⬆ Import"}
+              <input type="file" accept=".json" onChange={importTemplates} style={{ display: "none" }} />
+            </label>
+            <button onClick={openNewForm} className="btn btn-primary">
+              {t.newTemplate}
+            </button>
+          </div>
         ) : undefined}
       />
 
@@ -283,32 +324,6 @@ export default function LeadsPage() {
                   />
                 </div>
                 <div>
-                  <label style={labelStyle}>{t.templateLanguage}</label>
-                  <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
-                    {(["he", "en"] as const).map((l) => (
-                      <button
-                        key={l}
-                        type="button"
-                        onClick={() => setFormLang(l)}
-                        style={{
-                          padding: "7px 20px",
-                          borderRadius: "8px",
-                          border: `1.5px solid ${formLang === l ? "var(--coral)" : "var(--border)"}`,
-                          background: formLang === l ? "var(--coral-light)" : "var(--bg)",
-                          color: formLang === l ? "var(--coral)" : "var(--text-secondary)",
-                          fontFamily: "var(--font-body)",
-                          fontSize: "14px",
-                          fontWeight: formLang === l ? 700 : 400,
-                          cursor: "pointer",
-                          transition: "all 150ms var(--ease-out)",
-                        }}
-                      >
-                        {l === "he" ? t.templateLangHe : t.templateLangEn}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
                   <label style={labelStyle}>{t.templateBody}</label>
                   <textarea
                     placeholder={t.templateBodyPlaceholder}
@@ -377,19 +392,8 @@ export default function LeadsPage() {
                 <div key={tmpl.id} style={{ background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: "12px", padding: "18px 20px" }}>
                   <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
                     <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                        <span style={{ fontWeight: 700, fontSize: "15px", color: "var(--text-primary)" }}>
-                          {tmpl.title}
-                        </span>
-                        <span style={{
-                          fontSize: "11px", fontWeight: 600, padding: "2px 8px",
-                          borderRadius: "10px", flexShrink: 0,
-                          background: tmpl.language === "en" ? "#EDE9FE" : "var(--steel-light)",
-                          color: tmpl.language === "en" ? "#7C3AED" : "var(--steel)",
-                          fontFamily: "var(--font-body)",
-                        }}>
-                          {tmpl.language === "en" ? t.templateLangEn : t.templateLangHe}
-                        </span>
+                      <div style={{ fontWeight: 700, fontSize: "15px", color: "var(--text-primary)", marginBottom: "6px" }}>
+                        {tmpl.title}
                       </div>
                       <div style={{ fontSize: "13px", color: "var(--muted)", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
                         {tmpl.body}
