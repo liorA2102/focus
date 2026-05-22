@@ -189,7 +189,7 @@ export default function LeadsPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ title: tmpl.title, body: tmpl.body, imageFilename: tmpl.imageFilename ?? null }),
         });
-        if (res.ok) { setTemplates((prev) => [...prev, await res.json()]); added++; }
+        if (res.ok) { const created = await res.json(); setTemplates((prev) => [...prev, created]); added++; }
       }
       alert(`${added} ${lang === "he" ? "תבניות יובאו" : "templates imported"}`);
     } catch {
