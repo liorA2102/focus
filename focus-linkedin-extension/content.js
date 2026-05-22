@@ -210,10 +210,15 @@ function selectTemplate(tmpl, editor) {
   closeDropdown();
 
   const post = findPostArticle(editor);
+  console.log("[Focus] post article found:", !!post, post);
+
   const leadData = extractLeadData(post, tmpl.title);
+  console.log("[Focus] lead data:", leadData);
+
   if (leadData) {
-    chrome.runtime.sendMessage({ type: "SAVE_LEAD", payload: leadData });
-    console.log("[Focus] lead saved:", leadData.name);
+    chrome.runtime.sendMessage({ type: "SAVE_LEAD", payload: leadData }, (res) => {
+      console.log("[Focus] SAVE_LEAD response:", res, chrome.runtime.lastError);
+    });
   }
 
   injectText(editor, tmpl.body);
@@ -291,12 +296,22 @@ function extractLeadData(post, templateTitle) {
 function findPostArticle(el) {
   let cur = el;
   while (cur && cur !== document.body) {
+    const cls = typeof cur.className === "string" ? cur.className : "";
     if (
       cur.tagName === "ARTICLE" ||
-      cur.classList.contains("feed-shared-update-v2") ||
-      cur.classList.contains("occludable-update") ||
-      cur.dataset?.urn?.includes("activity")
+      cls.includes("feed-shared-update") ||
+      cls.includes("occludable-update") ||
+      cls.includes("feed-shared-post") ||
+      cls.includes("update-components") ||
+      cur.dataset?.urn?.includes("activity") ||
+      cur.dataset?.id?.includes("urn:li:activity")
     ) return cur;
+    cur = cur.parentElement;
+  }
+  // Last resort: walk up to find any element with a data-urn containing activity
+  cur = el;
+  while (cur && cur !== document.body) {
+    if (cur.dataset?.urn || cur.getAttribute?.("data-urn")) return cur;
     cur = cur.parentElement;
   }
   return null;
