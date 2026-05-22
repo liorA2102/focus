@@ -41,8 +41,19 @@ function scanForEditors() {
 
 // ── Button ─────────────────────────────────────────────────────────────────
 function attachButton(editor) {
+  // Diagnostic: dump ancestor chain so we can find the right selector
+  let _cur = editor, _chain = [];
+  for (let i = 0; i < 25 && _cur && _cur !== document.body; i++) {
+    const cls = typeof _cur.className === "string" ? _cur.className.trim().substring(0, 80) : "";
+    const urn = _cur.dataset?.urn || _cur.getAttribute?.("data-urn") || "";
+    const id  = _cur.dataset?.id  || _cur.getAttribute?.("data-id")  || "";
+    _chain.push(`[${i}] <${_cur.tagName.toLowerCase()}> cls="${cls}" urn="${urn}" id="${id}"`);
+    _cur = _cur.parentElement;
+  }
+  console.log("[Focus] ancestor chain:\n" + _chain.join("\n"));
+
   const postArticle = findPostArticle(editor);
-  console.log("[Focus] attachButton — post found:", !!postArticle, postArticle?.dataset?.urn || postArticle?.className?.substring?.(0, 60) || "");
+  console.log("[Focus] attachButton — post found:", !!postArticle);
 
   const btn = document.createElement("button");
   btn.className = "focus-btn";
@@ -256,29 +267,38 @@ function injectImage(filename, scope) {
 function extractLeadData(post, templateTitle) {
   if (!post) return null;
 
+  // LinkedIn obfuscates class names — rely on href patterns and aria attributes instead
   const authorLink =
-    post.querySelector('.update-components-actor__meta a[href*="/in/"]') ||
-    post.querySelector('.feed-shared-actor__meta a[href*="/in/"]') ||
-    post.querySelector('a[href*="linkedin.com/in/"]');
+    post.querySelector('a[href*="linkedin.com/in/"]') ||
+    post.querySelector('a[href*="/in/"]');
 
-  const nameEl =
-    post.querySelector('.update-components-actor__name span[aria-hidden="true"]') ||
-    post.querySelector('.update-components-actor__name') ||
-    post.querySelector('.feed-shared-actor__name') ||
-    authorLink?.querySelector('span[aria-hidden="true"]');
-
-  const headlineEl =
-    post.querySelector('.update-components-actor__description span[aria-hidden="true"]') ||
-    post.querySelector('.update-components-actor__description') ||
-    post.querySelector('.feed-shared-actor__description');
-
-  const avatarEl = post.querySelector('.update-components-actor__avatar img, .feed-shared-actor__avatar img');
-
+  // Author name: first aria-hidden span inside the author link, or the link text itself
+  const nameEl = authorLink?.querySelector('span[aria-hidden="true"]');
   const name = nameEl?.textContent?.trim() || authorLink?.textContent?.trim();
   if (!name) return null;
 
+  // Headline: first <span aria-hidden="true"> that is NOT inside the author link,
+  // and appears near the top of the post (within the first ~400 chars of text)
+  let headline = null;
+  if (authorLink) {
+    // Walk siblings/cousins: look for a span that contains job-like text near the author link
+    const container = authorLink.closest('div, li') || post;
+    const spans = Array.from(container.querySelectorAll('span[aria-hidden="true"]'));
+    for (const s of spans) {
+      if (authorLink.contains(s)) continue;
+      const t = s.textContent?.trim();
+      if (t && t.length > 5 && t.length < 200 && !t.includes("\n")) {
+        headline = t;
+        break;
+      }
+    }
+  }
+
+  const avatarEl = post.querySelector('img[src*="profile-displayphoto"], img[src*="ghost-person"]') ||
+                   post.querySelector('img[alt*="photo"], img[alt*="profile"]') ||
+                   post.querySelector('img');
+
   const linkedinUrl = (authorLink?.href || "").split("?")[0];
-  const headline = headlineEl?.textContent?.trim() || null;
 
   return {
     name,
@@ -298,6 +318,7 @@ function findPostArticle(el) {
     const cls = typeof cur.className === "string" ? cur.className : "";
     if (
       cur.tagName === "ARTICLE" ||
+      cur.tagName === "SECTION" ||
       cls.includes("feed-shared-update") ||
       cls.includes("occludable-update") ||
       cls.includes("feed-shared-post") ||
@@ -307,7 +328,7 @@ function findPostArticle(el) {
     ) return cur;
     cur = cur.parentElement;
   }
-  // Last resort: walk up to find any element with a data-urn containing activity
+  // Last resort: any element with a data-urn
   cur = el;
   while (cur && cur !== document.body) {
     if (cur.dataset?.urn || cur.getAttribute?.("data-urn")) return cur;
