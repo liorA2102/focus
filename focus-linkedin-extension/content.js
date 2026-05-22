@@ -1,5 +1,7 @@
 /*
  * Focus LinkedIn Assistant — content script
+ * Watches DOM for comment editors. Attaches button immediately on add, removes on DOM removal.
+ * No focus/blur handling — avoids LinkedIn's React re-render flicker entirely.
  */
 
 const FOCUS_LOGO_SVG = `<svg width="26" height="26" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -10,127 +12,102 @@ const FOCUS_LOGO_SVG = `<svg width="26" height="26" viewBox="0 0 54 54" fill="no
 <path d="M13.5 16C19.8513 16 25 20.9249 25 27C25 33.0751 19.8513 38 13.5 38C7.14873 38 2 33.0751 2 27C2 20.9249 7.14873 16 13.5 16ZM11.5 18C6.25329 18 2 22.0294 2 27C2 31.9706 6.25329 36 11.5 36C16.7467 36 21 31.9706 21 27C21 22.0294 16.7467 18 11.5 18Z" fill="#F05851"/>
 </svg>`;
 
-let activeEditor = null;
-let activePostEl = null;
-let floatingBtn = null;
-let dropdown = null;
 let templates = [];
+let activeDropdown = null;
+let activeDropdownEditor = null;
 
-// ── Boot ───────────────────────────────────────────────────────────────────
-console.log("[Focus] content script loaded");
+console.log("[Focus] loaded");
 loadTemplates();
 
-// ── Listen for ANY element gaining focus ──────────────────────────────────
-document.addEventListener("focusin", (e) => {
-  const el = e.target;
-  if (!el || el.contentEditable !== "true") return;
-  if (el === activeEditor) return;
+// ── Watch DOM for comment editors appearing ────────────────────────────────
+const domObserver = new MutationObserver(scanForEditors);
+domObserver.observe(document.body, { childList: true, subtree: true });
+scanForEditors();
 
-  // Skip the main "Start a post" composer
-  if (el.closest('[data-testid="share-box"], .share-creation-state, .artdeco-modal')) return;
+function scanForEditors() {
+  document.querySelectorAll('div[contenteditable="true"]').forEach((editor) => {
+    if (editor.dataset.focusDone) return;
 
-  console.log("[Focus] contenteditable focused:", el.className, el);
-  activeEditor = el;
-  activePostEl = findPostArticle(el);
-  attachButton(el);
-});
+    // Skip main post composer
+    if (editor.closest('[data-testid="share-box"]')) return;
+    if (editor.closest('.share-creation-state')) return;
+    if (editor.closest('.msg-form__contenteditable')) return; // DM box
 
-// Remove button when user clicks somewhere outside the comment area
-document.addEventListener("click", (e) => {
-  if (!floatingBtn) return;
-  if (floatingBtn.contains(e.target)) return;
-  if (dropdown?.contains(e.target)) return;
-  if (activeEditor?.contains(e.target)) return;
-  // Clicked outside — dismiss
-  removeUI();
-}, true);
-
-// Remove button if the editor is removed from the DOM (e.g. user cancels comment)
-const editorRemovalObserver = new MutationObserver(() => {
-  if (activeEditor && !document.body.contains(activeEditor)) {
-    removeUI();
-  }
-});
-editorRemovalObserver.observe(document.body, { childList: true, subtree: true });
-
-// ── Templates ──────────────────────────────────────────────────────────────
-function loadTemplates(force = false) {
-  chrome.runtime.sendMessage({ type: "GET_TEMPLATES", force }, (res) => {
-    if (chrome.runtime.lastError) {
-      console.warn("[Focus] template fetch error:", chrome.runtime.lastError.message);
-      return;
-    }
-    templates = res ?? [];
-    console.log("[Focus] templates loaded:", templates.length);
+    editor.dataset.focusDone = "1";
+    console.log("[Focus] editor found, attaching button");
+    attachButton(editor);
   });
 }
 
 // ── Button ─────────────────────────────────────────────────────────────────
 function attachButton(editor) {
-  removeUI();
+  const btn = document.createElement("button");
+  btn.className = "focus-btn";
+  btn.title = "Focus – Insert template";
+  btn.innerHTML = FOCUS_LOGO_SVG;
 
-  const rect = editor.getBoundingClientRect();
-  if (!rect.width) return; // editor not visible yet
+  // Position fixed, anchored to editor's bottom-right corner
+  positionBtn(btn, editor);
+  document.body.appendChild(btn);
 
-  floatingBtn = document.createElement("button");
-  floatingBtn.className = "focus-btn";
-  floatingBtn.title = "Focus – Insert template";
-  floatingBtn.innerHTML = FOCUS_LOGO_SVG;
+  // Reposition on scroll/resize
+  const reposition = () => positionBtn(btn, editor);
+  window.addEventListener("scroll", reposition, { passive: true });
+  window.addEventListener("resize", reposition, { passive: true });
 
-  // Use fixed positioning so we don't fight LinkedIn's layout
-  floatingBtn.style.position = "fixed";
-  floatingBtn.style.bottom = (window.innerHeight - rect.bottom + 6) + "px";
-  floatingBtn.style.right = (window.innerWidth - rect.right + 6) + "px";
-  floatingBtn.style.zIndex = "99999";
-
-  document.body.appendChild(floatingBtn);
-
-  floatingBtn.addEventListener("mousedown", (e) => {
+  btn.addEventListener("click", (e) => {
     e.preventDefault();
-    toggleDropdown();
+    e.stopPropagation();
+    if (activeDropdown && activeDropdownEditor === editor) {
+      closeDropdown();
+    } else {
+      closeDropdown();
+      openDropdown(editor, btn);
+    }
   });
 
-  // Reposition on scroll
-  floatingBtn._editor = editor;
-  window.addEventListener("scroll", repositionBtn, { passive: true, once: true });
-
-  console.log("[Focus] button attached, rect:", rect);
+  // Remove button when editor leaves DOM
+  const removalWatcher = new MutationObserver(() => {
+    if (!document.body.contains(editor)) {
+      btn.remove();
+      closeDropdown();
+      window.removeEventListener("scroll", reposition);
+      window.removeEventListener("resize", reposition);
+      removalWatcher.disconnect();
+    }
+  });
+  removalWatcher.observe(document.body, { childList: true, subtree: true });
 }
 
-function repositionBtn() {
-  if (!floatingBtn || !floatingBtn._editor) return;
-  const rect = floatingBtn._editor.getBoundingClientRect();
-  floatingBtn.style.bottom = (window.innerHeight - rect.bottom + 6) + "px";
-  floatingBtn.style.right = (window.innerWidth - rect.right + 6) + "px";
+function positionBtn(btn, editor) {
+  const rect = editor.getBoundingClientRect();
+  if (!rect.width) return;
+  btn.style.top  = (rect.bottom - 38 + window.scrollY) + "px";
+  btn.style.left = (rect.right  - 38 + window.scrollX) + "px";
 }
 
 // ── Dropdown ───────────────────────────────────────────────────────────────
-function toggleDropdown() {
-  if (dropdown) { dropdown.remove(); dropdown = null; return; }
-  openDropdown();
-}
+function openDropdown(editor, btn) {
+  const dd = document.createElement("div");
+  dd.className = "focus-dropdown";
 
-function openDropdown() {
-  dropdown = document.createElement("div");
-  dropdown.className = "focus-dropdown";
-
-  // Position above the button
-  const btnRect = floatingBtn.getBoundingClientRect();
-  dropdown.style.position = "fixed";
-  dropdown.style.bottom = (window.innerHeight - btnRect.top + 6) + "px";
-  dropdown.style.right = (window.innerWidth - btnRect.right) + "px";
-  dropdown.style.zIndex = "100000";
+  const btnRect = btn.getBoundingClientRect();
+  dd.style.position = "absolute";
+  dd.style.top  = (btnRect.top - 8 + window.scrollY) + "px";
+  dd.style.left = (btnRect.right - 280 + window.scrollX) + "px";
+  dd.style.zIndex = "100000";
+  dd.style.transform = "translateY(-100%)";
 
   const header = document.createElement("div");
   header.className = "focus-dropdown-header";
   header.textContent = "Focus Templates";
-  dropdown.appendChild(header);
+  dd.appendChild(header);
 
-  if (!templates || templates.length === 0) {
+  if (!templates.length) {
     const empty = document.createElement("div");
     empty.className = "focus-empty";
-    empty.textContent = "No templates yet — add them in the Focus app (/leads)";
-    dropdown.appendChild(empty);
+    empty.textContent = "No templates yet — add in Focus app → Leads";
+    dd.appendChild(empty);
   } else {
     templates.forEach((tmpl) => {
       const item = document.createElement("button");
@@ -138,11 +115,10 @@ function openDropdown() {
 
       const thumb = document.createElement("div");
       if (tmpl.imageFilename) {
-        const imgEl = document.createElement("img");
-        imgEl.className = "focus-template-thumb";
-        imgEl.src = `http://localhost:3001/linkedin-images/${tmpl.imageFilename}`;
-        imgEl.alt = "";
-        thumb.appendChild(imgEl);
+        const img = document.createElement("img");
+        img.className = "focus-template-thumb";
+        img.src = `http://localhost:3001/linkedin-images/${tmpl.imageFilename}`;
+        thumb.appendChild(img);
       } else {
         thumb.className = "focus-template-placeholder";
         thumb.textContent = "💬";
@@ -150,21 +126,16 @@ function openDropdown() {
 
       const info = document.createElement("div");
       info.style.cssText = "flex:1;min-width:0;text-align:left;";
+      info.innerHTML = `<div class="focus-template-title">${tmpl.title}</div>
+        <div class="focus-template-preview">${tmpl.body.substring(0, 60)}${tmpl.body.length > 60 ? "…" : ""}</div>`;
 
-      const titleEl = document.createElement("div");
-      titleEl.className = "focus-template-title";
-      titleEl.textContent = tmpl.title;
-
-      const preview = document.createElement("div");
-      preview.className = "focus-template-preview";
-      preview.textContent = tmpl.body.substring(0, 60) + (tmpl.body.length > 60 ? "…" : "");
-
-      info.appendChild(titleEl);
-      info.appendChild(preview);
       item.appendChild(thumb);
       item.appendChild(info);
-      item.addEventListener("mousedown", (e) => { e.preventDefault(); selectTemplate(tmpl); });
-      dropdown.appendChild(item);
+      item.addEventListener("click", (e) => {
+        e.stopPropagation();
+        selectTemplate(tmpl, editor);
+      });
+      dd.appendChild(item);
     });
   }
 
@@ -172,50 +143,70 @@ function openDropdown() {
   refreshBtn.className = "focus-template-item";
   refreshBtn.style.cssText = "border-top:1px solid #f0f0f0;margin-top:4px;color:#888;font-size:11px;justify-content:center;";
   refreshBtn.textContent = "↺ Refresh templates";
-  refreshBtn.addEventListener("mousedown", (e) => {
-    e.preventDefault();
+  refreshBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     loadTemplates(true);
-    dropdown.remove(); dropdown = null;
-    setTimeout(openDropdown, 400);
+    closeDropdown();
+    setTimeout(() => openDropdown(editor, btn), 400);
   });
-  dropdown.appendChild(refreshBtn);
+  dd.appendChild(refreshBtn);
 
-  document.body.appendChild(dropdown);
+  document.body.appendChild(dd);
+  activeDropdown = dd;
+  activeDropdownEditor = editor;
+
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener("click", outsideClickHandler, { capture: true, once: true });
+  }, 0);
+}
+
+function outsideClickHandler(e) {
+  if (activeDropdown && !activeDropdown.contains(e.target)) {
+    closeDropdown();
+  } else if (activeDropdown) {
+    // Re-register if click was inside dropdown
+    setTimeout(() => {
+      document.addEventListener("click", outsideClickHandler, { capture: true, once: true });
+    }, 0);
+  }
+}
+
+function closeDropdown() {
+  activeDropdown?.remove();
+  activeDropdown = null;
+  activeDropdownEditor = null;
 }
 
 // ── Template selection ─────────────────────────────────────────────────────
-function selectTemplate(tmpl) {
-  if (dropdown) { dropdown.remove(); dropdown = null; }
+function selectTemplate(tmpl, editor) {
+  closeDropdown();
 
-  const leadData = extractLeadData(tmpl.title);
+  const post = findPostArticle(editor);
+  const leadData = extractLeadData(post, tmpl.title);
   if (leadData) {
     chrome.runtime.sendMessage({ type: "SAVE_LEAD", payload: leadData });
     console.log("[Focus] lead saved:", leadData.name);
   }
 
-  injectText(tmpl.body);
-
-  if (tmpl.imageFilename) injectImage(tmpl.imageFilename);
-
+  injectText(editor, tmpl.body);
+  if (tmpl.imageFilename) injectImage(tmpl.imageFilename, post || document.body);
   showToast(leadData ? `✓ ${leadData.name} added as lead` : "✓ Template inserted");
 }
 
 // ── Text injection ─────────────────────────────────────────────────────────
-function injectText(text) {
-  if (!activeEditor) return;
-  activeEditor.focus();
+function injectText(editor, text) {
+  editor.focus();
   document.execCommand("selectAll", false, null);
   document.execCommand("insertText", false, text);
-
-  if (!activeEditor.textContent.includes(text.substring(0, 20))) {
-    activeEditor.textContent = text;
-    activeEditor.dispatchEvent(new Event("input", { bubbles: true }));
+  if (!editor.textContent.includes(text.substring(0, 20))) {
+    editor.textContent = text;
+    editor.dispatchEvent(new Event("input", { bubbles: true }));
   }
 }
 
 // ── Image injection ────────────────────────────────────────────────────────
-function injectImage(filename) {
-  const scope = activePostEl || document.body;
+function injectImage(filename, scope) {
   chrome.runtime.sendMessage({ type: "GET_IMAGE", path: `/linkedin-images/${filename}` }, ({ dataUrl }) => {
     if (!dataUrl) return;
     const fileInput = scope.querySelector('input[type="file"][accept*="image"]');
@@ -231,8 +222,7 @@ function injectImage(filename) {
 }
 
 // ── Lead extraction ────────────────────────────────────────────────────────
-function extractLeadData(templateTitle) {
-  const post = activePostEl;
+function extractLeadData(post, templateTitle) {
   if (!post) return null;
 
   const authorLink =
@@ -244,7 +234,7 @@ function extractLeadData(templateTitle) {
     post.querySelector('.update-components-actor__name span[aria-hidden="true"]') ||
     post.querySelector('.update-components-actor__name') ||
     post.querySelector('.feed-shared-actor__name') ||
-    (authorLink?.querySelector('span[aria-hidden="true"]'));
+    authorLink?.querySelector('span[aria-hidden="true"]');
 
   const headlineEl =
     post.querySelector('.update-components-actor__description span[aria-hidden="true"]') ||
@@ -258,12 +248,11 @@ function extractLeadData(templateTitle) {
 
   const linkedinUrl = (authorLink?.href || "").split("?")[0];
   const headline = headlineEl?.textContent?.trim() || null;
-  const company = headline?.match(/ at (.+)$/i)?.[1] ?? null;
 
   return {
     name,
     headline,
-    company,
+    company: headline?.match(/ at (.+)$/i)?.[1] ?? null,
     linkedinUrl,
     profilePictureUrl: avatarEl?.src || null,
     postUrl: window.location.href,
@@ -279,11 +268,19 @@ function findPostArticle(el) {
       cur.tagName === "ARTICLE" ||
       cur.classList.contains("feed-shared-update-v2") ||
       cur.classList.contains("occludable-update") ||
-      cur.dataset.urn?.includes("activity")
+      cur.dataset?.urn?.includes("activity")
     ) return cur;
     cur = cur.parentElement;
   }
   return null;
+}
+
+function loadTemplates(force = false) {
+  chrome.runtime.sendMessage({ type: "GET_TEMPLATES", force }, (res) => {
+    if (chrome.runtime.lastError) return;
+    templates = res ?? [];
+    console.log("[Focus] templates:", templates.length);
+  });
 }
 
 function showToast(message) {
@@ -296,11 +293,4 @@ function showToast(message) {
   toast.appendChild(document.createTextNode(message));
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
-}
-
-function removeUI() {
-  floatingBtn?.remove(); floatingBtn = null;
-  dropdown?.remove(); dropdown = null;
-  activeEditor = null;
-  activePostEl = null;
 }

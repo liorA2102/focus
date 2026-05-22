@@ -1,6 +1,7 @@
 /* Focus LinkedIn Extension styles */
 
 .focus-btn {
+  position: absolute;
   width: 34px;
   height: 34px;
   border-radius: 50%;
