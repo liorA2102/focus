@@ -1,9 +1,6 @@
 /* Focus LinkedIn Extension styles */
 
 .focus-btn {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -34,10 +31,7 @@
 
 /* Dropdown */
 .focus-dropdown {
-  position: absolute;
-  bottom: 46px;
-  right: 8px;
-  z-index: 99999;
+  z-index: 100000;
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 12px;

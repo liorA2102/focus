@@ -1,103 +1,123 @@
 /*
  * Focus LinkedIn Assistant — content script
- * Injects a floating button next to LinkedIn comment boxes.
- * Clicking it opens a template picker that inserts text (and optionally image).
- * On selection, the post author is captured and saved as a lead in Focus.
  */
 
-const FOCUS_LOGO = chrome.runtime.getURL("icons/icon48.png");
+const FOCUS_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="20" height="20">
+  <circle cx="16" cy="16" r="16" fill="#E8533A"/>
+  <rect x="10" y="9" width="5" height="14" rx="2" fill="white"/>
+  <rect x="17" y="9" width="5" height="9" rx="2" fill="white"/>
+</svg>`;
 
-// ── State ──────────────────────────────────────────────────────────────────
-let activeEditor = null;    // the comment contenteditable
-let activePostEl = null;    // the post article wrapping the editor
+let activeEditor = null;
+let activePostEl = null;
 let floatingBtn = null;
 let dropdown = null;
 let templates = [];
 
 // ── Boot ───────────────────────────────────────────────────────────────────
+console.log("[Focus] content script loaded");
 loadTemplates();
-observeDOM();
 
-// ── Template loading ───────────────────────────────────────────────────────
+// ── Listen for ANY element gaining focus ──────────────────────────────────
+document.addEventListener("focusin", (e) => {
+  const el = e.target;
+  if (!el || el.contentEditable !== "true") return;
+  if (el === activeEditor) return;
+
+  // Skip the main "Start a post" composer
+  if (el.closest('[data-testid="share-box"], .share-creation-state, .artdeco-modal')) return;
+
+  console.log("[Focus] contenteditable focused:", el.className, el);
+  activeEditor = el;
+  activePostEl = findPostArticle(el);
+  attachButton(el);
+});
+
+// Remove button when user clicks somewhere outside the comment area
+document.addEventListener("click", (e) => {
+  if (!floatingBtn) return;
+  if (floatingBtn.contains(e.target)) return;
+  if (dropdown?.contains(e.target)) return;
+  if (activeEditor?.contains(e.target)) return;
+  // Clicked outside — dismiss
+  removeUI();
+}, true);
+
+// Remove button if the editor is removed from the DOM (e.g. user cancels comment)
+const editorRemovalObserver = new MutationObserver(() => {
+  if (activeEditor && !document.body.contains(activeEditor)) {
+    removeUI();
+  }
+});
+editorRemovalObserver.observe(document.body, { childList: true, subtree: true });
+
+// ── Templates ──────────────────────────────────────────────────────────────
 function loadTemplates(force = false) {
   chrome.runtime.sendMessage({ type: "GET_TEMPLATES", force }, (res) => {
+    if (chrome.runtime.lastError) {
+      console.warn("[Focus] template fetch error:", chrome.runtime.lastError.message);
+      return;
+    }
     templates = res ?? [];
+    console.log("[Focus] templates loaded:", templates.length);
   });
 }
 
-// ── DOM observation ────────────────────────────────────────────────────────
-function observeDOM() {
-  const observer = new MutationObserver(() => scanForEditors());
-  observer.observe(document.body, { childList: true, subtree: true });
-  scanForEditors();
-}
-
-function scanForEditors() {
-  // LinkedIn comment editors have role="textbox" and a specific class
-  const editors = document.querySelectorAll(
-    '.comments-comment-box__editor [contenteditable="true"], ' +
-    '.comments-comment-texteditor [contenteditable="true"], ' +
-    '[data-placeholder][contenteditable="true"]'
-  );
-
-  editors.forEach((editor) => {
-    if (editor.dataset.focusAttached) return;
-    editor.dataset.focusAttached = "1";
-
-    editor.addEventListener("focus", () => {
-      activeEditor = editor;
-      activePostEl = findPostArticle(editor);
-      attachButton(editor);
-    });
-
-    editor.addEventListener("blur", (e) => {
-      // Delay removal so click on button/dropdown registers first
-      setTimeout(() => {
-        if (!dropdown || !dropdown.matches(":hover")) {
-          removeUI();
-        }
-      }, 200);
-    });
-  });
-}
-
-// ── Button & dropdown ──────────────────────────────────────────────────────
+// ── Button ─────────────────────────────────────────────────────────────────
 function attachButton(editor) {
   removeUI();
 
-  const wrap = getPositionedWrapper(editor);
-  if (!wrap) return;
+  const rect = editor.getBoundingClientRect();
+  if (!rect.width) return; // editor not visible yet
 
   floatingBtn = document.createElement("button");
   floatingBtn.className = "focus-btn";
   floatingBtn.title = "Focus – Insert template";
+  floatingBtn.innerHTML = FOCUS_LOGO_SVG;
 
-  const img = document.createElement("img");
-  img.src = FOCUS_LOGO;
-  img.alt = "Focus";
-  floatingBtn.appendChild(img);
+  // Use fixed positioning so we don't fight LinkedIn's layout
+  floatingBtn.style.position = "fixed";
+  floatingBtn.style.bottom = (window.innerHeight - rect.bottom + 6) + "px";
+  floatingBtn.style.right = (window.innerWidth - rect.right + 6) + "px";
+  floatingBtn.style.zIndex = "99999";
 
-  wrap.style.position = wrap.style.position || "relative";
-  wrap.appendChild(floatingBtn);
+  document.body.appendChild(floatingBtn);
 
   floatingBtn.addEventListener("mousedown", (e) => {
-    e.preventDefault(); // prevent editor blur
+    e.preventDefault();
     toggleDropdown();
   });
+
+  // Reposition on scroll
+  floatingBtn._editor = editor;
+  window.addEventListener("scroll", repositionBtn, { passive: true, once: true });
+
+  console.log("[Focus] button attached, rect:", rect);
 }
 
+function repositionBtn() {
+  if (!floatingBtn || !floatingBtn._editor) return;
+  const rect = floatingBtn._editor.getBoundingClientRect();
+  floatingBtn.style.bottom = (window.innerHeight - rect.bottom + 6) + "px";
+  floatingBtn.style.right = (window.innerWidth - rect.right + 6) + "px";
+}
+
+// ── Dropdown ───────────────────────────────────────────────────────────────
 function toggleDropdown() {
-  if (dropdown) {
-    dropdown.remove();
-    dropdown = null;
-    return;
-  }
+  if (dropdown) { dropdown.remove(); dropdown = null; return; }
   openDropdown();
 }
 
 function openDropdown() {
   dropdown = document.createElement("div");
   dropdown.className = "focus-dropdown";
+
+  // Position above the button
+  const btnRect = floatingBtn.getBoundingClientRect();
+  dropdown.style.position = "fixed";
+  dropdown.style.bottom = (window.innerHeight - btnRect.top + 6) + "px";
+  dropdown.style.right = (window.innerWidth - btnRect.right) + "px";
+  dropdown.style.zIndex = "100000";
 
   const header = document.createElement("div");
   header.className = "focus-dropdown-header";
@@ -107,7 +127,7 @@ function openDropdown() {
   if (!templates || templates.length === 0) {
     const empty = document.createElement("div");
     empty.className = "focus-empty";
-    empty.textContent = "No templates yet — add them in the Focus app";
+    empty.textContent = "No templates yet — add them in the Focus app (/leads)";
     dropdown.appendChild(empty);
   } else {
     templates.forEach((tmpl) => {
@@ -127,8 +147,7 @@ function openDropdown() {
       }
 
       const info = document.createElement("div");
-      info.style.flex = "1";
-      info.style.minWidth = "0";
+      info.style.cssText = "flex:1;min-width:0;text-align:left;";
 
       const titleEl = document.createElement("div");
       titleEl.className = "focus-template-title";
@@ -142,56 +161,40 @@ function openDropdown() {
       info.appendChild(preview);
       item.appendChild(thumb);
       item.appendChild(info);
-
-      item.addEventListener("mousedown", (e) => {
-        e.preventDefault();
-        selectTemplate(tmpl);
-      });
-
+      item.addEventListener("mousedown", (e) => { e.preventDefault(); selectTemplate(tmpl); });
       dropdown.appendChild(item);
     });
   }
 
-  // Refresh button at bottom
   const refreshBtn = document.createElement("button");
   refreshBtn.className = "focus-template-item";
-  refreshBtn.style.borderTop = "1px solid #f0f0f0";
-  refreshBtn.style.marginTop = "4px";
-  refreshBtn.style.color = "#888";
-  refreshBtn.style.fontSize = "11px";
-  refreshBtn.style.justifyContent = "center";
+  refreshBtn.style.cssText = "border-top:1px solid #f0f0f0;margin-top:4px;color:#888;font-size:11px;justify-content:center;";
   refreshBtn.textContent = "↺ Refresh templates";
   refreshBtn.addEventListener("mousedown", (e) => {
     e.preventDefault();
     loadTemplates(true);
-    dropdown.remove();
-    dropdown = null;
-    setTimeout(openDropdown, 300);
+    dropdown.remove(); dropdown = null;
+    setTimeout(openDropdown, 400);
   });
   dropdown.appendChild(refreshBtn);
 
-  floatingBtn.parentElement.appendChild(dropdown);
+  document.body.appendChild(dropdown);
 }
 
 // ── Template selection ─────────────────────────────────────────────────────
 function selectTemplate(tmpl) {
   if (dropdown) { dropdown.remove(); dropdown = null; }
 
-  // 1. Capture lead BEFORE focusing editor (author data from current post)
   const leadData = extractLeadData(tmpl.title);
   if (leadData) {
     chrome.runtime.sendMessage({ type: "SAVE_LEAD", payload: leadData });
+    console.log("[Focus] lead saved:", leadData.name);
   }
 
-  // 2. Insert text into editor
   injectText(tmpl.body);
 
-  // 3. Attach image if template has one
-  if (tmpl.imageFilename) {
-    injectImage(tmpl.imageFilename, activePostEl || document.body);
-  }
+  if (tmpl.imageFilename) injectImage(tmpl.imageFilename);
 
-  // 4. Show toast
   showToast(leadData ? `✓ ${leadData.name} added as lead` : "✓ Template inserted");
 }
 
@@ -199,12 +202,9 @@ function selectTemplate(tmpl) {
 function injectText(text) {
   if (!activeEditor) return;
   activeEditor.focus();
-
-  // Clear existing content and insert new text
   document.execCommand("selectAll", false, null);
   document.execCommand("insertText", false, text);
 
-  // If execCommand doesn't work (some LinkedIn builds), fall back to input event
   if (!activeEditor.textContent.includes(text.substring(0, 20))) {
     activeEditor.textContent = text;
     activeEditor.dispatchEvent(new Event("input", { bubbles: true }));
@@ -212,126 +212,93 @@ function injectText(text) {
 }
 
 // ── Image injection ────────────────────────────────────────────────────────
-function injectImage(filename, scope) {
-  // Ask background to fetch the image as a data URL, then create a File
-  chrome.runtime.sendMessage(
-    { type: "GET_IMAGE", path: `/linkedin-images/${filename}` },
-    ({ dataUrl }) => {
-      if (!dataUrl) return;
-
-      // Find LinkedIn's hidden file input near the comment box
-      const fileInput = scope.querySelector('input[type="file"][accept*="image"]');
-      if (!fileInput) return;
-
-      fetch(dataUrl)
-        .then((r) => r.blob())
-        .then((blob) => {
-          const ext = filename.split(".").pop() || "png";
-          const file = new File([blob], filename, { type: blob.type || `image/${ext}` });
-          const dt = new DataTransfer();
-          dt.items.add(file);
-          fileInput.files = dt.files;
-          fileInput.dispatchEvent(new Event("change", { bubbles: true }));
-        })
-        .catch(() => {
-          // Image injection failed — user can attach manually
-        });
-    }
-  );
+function injectImage(filename) {
+  const scope = activePostEl || document.body;
+  chrome.runtime.sendMessage({ type: "GET_IMAGE", path: `/linkedin-images/${filename}` }, ({ dataUrl }) => {
+    if (!dataUrl) return;
+    const fileInput = scope.querySelector('input[type="file"][accept*="image"]');
+    if (!fileInput) return;
+    fetch(dataUrl).then(r => r.blob()).then(blob => {
+      const file = new File([blob], filename, { type: blob.type });
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      fileInput.files = dt.files;
+      fileInput.dispatchEvent(new Event("change", { bubbles: true }));
+    }).catch(() => {});
+  });
 }
 
-// ── Lead data extraction ───────────────────────────────────────────────────
+// ── Lead extraction ────────────────────────────────────────────────────────
 function extractLeadData(templateTitle) {
-  const post = activePostEl || findNearestPost(activeEditor);
+  const post = activePostEl;
   if (!post) return null;
 
-  // Author link — LinkedIn renders the post author in a few different ways
   const authorLink =
     post.querySelector('.update-components-actor__meta a[href*="/in/"]') ||
     post.querySelector('.feed-shared-actor__meta a[href*="/in/"]') ||
     post.querySelector('a[href*="linkedin.com/in/"]');
 
   const nameEl =
+    post.querySelector('.update-components-actor__name span[aria-hidden="true"]') ||
     post.querySelector('.update-components-actor__name') ||
     post.querySelector('.feed-shared-actor__name') ||
-    post.querySelector('.update-components-actor__title') ||
-    (authorLink && authorLink.querySelector('span[aria-hidden="true"]'));
+    (authorLink?.querySelector('span[aria-hidden="true"]'));
 
   const headlineEl =
+    post.querySelector('.update-components-actor__description span[aria-hidden="true"]') ||
     post.querySelector('.update-components-actor__description') ||
     post.querySelector('.feed-shared-actor__description');
 
   const avatarEl = post.querySelector('.update-components-actor__avatar img, .feed-shared-actor__avatar img');
 
-  const name = nameEl?.textContent?.trim() || authorLink?.textContent?.trim() || null;
+  const name = nameEl?.textContent?.trim() || authorLink?.textContent?.trim();
   if (!name) return null;
 
-  const rawUrl = authorLink?.href || "";
-  const linkedinUrl = rawUrl.split("?")[0]; // strip query params
-
+  const linkedinUrl = (authorLink?.href || "").split("?")[0];
   const headline = headlineEl?.textContent?.trim() || null;
-  const profilePictureUrl = avatarEl?.src || null;
-  const postUrl = window.location.href;
+  const company = headline?.match(/ at (.+)$/i)?.[1] ?? null;
 
-  // Try to extract company from headline "Title at Company"
-  const company = headline ? (headline.match(/ at (.+)$/i)?.[1] ?? null) : null;
-
-  return { name, headline, company, linkedinUrl, profilePictureUrl, postUrl, templateUsed: templateTitle };
+  return {
+    name,
+    headline,
+    company,
+    linkedinUrl,
+    profilePictureUrl: avatarEl?.src || null,
+    postUrl: window.location.href,
+    templateUsed: templateTitle,
+  };
 }
 
-// ── DOM helpers ────────────────────────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────────────────────
 function findPostArticle(el) {
   let cur = el;
   while (cur && cur !== document.body) {
-    if (cur.tagName === "ARTICLE" || cur.classList.contains("feed-shared-update-v2") || cur.classList.contains("occludable-update")) {
-      return cur;
-    }
+    if (
+      cur.tagName === "ARTICLE" ||
+      cur.classList.contains("feed-shared-update-v2") ||
+      cur.classList.contains("occludable-update") ||
+      cur.dataset.urn?.includes("activity")
+    ) return cur;
     cur = cur.parentElement;
   }
   return null;
 }
 
-function findNearestPost(el) {
-  return findPostArticle(el);
-}
-
-function getPositionedWrapper(editor) {
-  // Walk up until we find a box that contains the editor buttons area
-  let cur = editor.parentElement;
-  for (let i = 0; i < 8; i++) {
-    if (!cur || cur === document.body) break;
-    if (cur.classList.contains("comments-comment-box") ||
-        cur.classList.contains("comments-comment-box--cr") ||
-        cur.classList.contains("comments-comment-texteditor")) {
-      return cur;
-    }
-    cur = cur.parentElement;
-  }
-  // Fall back to direct parent
-  return editor.parentElement;
-}
-
-// ── Toast ──────────────────────────────────────────────────────────────────
 function showToast(message) {
-  const existing = document.querySelector(".focus-toast");
-  if (existing) existing.remove();
-
+  document.querySelector(".focus-toast")?.remove();
   const toast = document.createElement("div");
   toast.className = "focus-toast";
-
   const dot = document.createElement("div");
   dot.className = "focus-toast-dot";
   toast.appendChild(dot);
   toast.appendChild(document.createTextNode(message));
-
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
 
-// ── Cleanup ────────────────────────────────────────────────────────────────
 function removeUI() {
-  if (floatingBtn) { floatingBtn.remove(); floatingBtn = null; }
-  if (dropdown) { dropdown.remove(); dropdown = null; }
+  floatingBtn?.remove(); floatingBtn = null;
+  dropdown?.remove(); dropdown = null;
   activeEditor = null;
   activePostEl = null;
 }

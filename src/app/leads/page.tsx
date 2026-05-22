@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef } from "react";
 import { useLang } from "@/context/LanguageContext";
 import translations from "@/lib/t";
+import PageHeader from "@/components/ui/PageHeader";
+import EmptyState from "@/components/ui/EmptyState";
 
 type Lead = {
   id: number;
@@ -22,6 +24,7 @@ type Template = {
   title: string;
   body: string;
   imageFilename: string | null;
+  language: "he" | "en";
   createdAt: string;
 };
 
@@ -91,6 +94,7 @@ export default function LeadsPage() {
   const [formTitle, setFormTitle] = useState("");
   const [formBody, setFormBody] = useState("");
   const [formImage, setFormImage] = useState<string | null>(null);
+  const [formLang, setFormLang] = useState<"he" | "en">("he");
   const [formSaving, setFormSaving] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [deletingTemplate, setDeletingTemplate] = useState<number | null>(null);
@@ -113,6 +117,7 @@ export default function LeadsPage() {
     setFormTitle("");
     setFormBody("");
     setFormImage(null);
+    setFormLang("he");
     setShowForm(true);
   };
 
@@ -121,6 +126,7 @@ export default function LeadsPage() {
     setFormTitle(tmpl.title);
     setFormBody(tmpl.body);
     setFormImage(tmpl.imageFilename);
+    setFormLang(tmpl.language ?? "he");
     setShowForm(true);
   };
 
@@ -129,7 +135,7 @@ export default function LeadsPage() {
   const saveTemplate = async () => {
     if (!formTitle.trim() || !formBody.trim()) return;
     setFormSaving(true);
-    const payload = { title: formTitle.trim(), body: formBody.trim(), imageFilename: formImage };
+    const payload = { title: formTitle.trim(), body: formBody.trim(), imageFilename: formImage, language: formLang };
 
     if (editingTemplate) {
       const res = await fetch(`/api/comment-templates/${editingTemplate.id}`, {
@@ -163,16 +169,16 @@ export default function LeadsPage() {
   };
 
   return (
-    <div style={{ maxWidth: "860px" }}>
+    <div>
       {/* Header */}
-      <div style={{ marginBottom: "32px" }}>
-        <div style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--muted)", marginBottom: "6px" }}>
-          LinkedIn
-        </div>
-        <h1 style={{ fontSize: "28px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
-          {t.title}
-        </h1>
-      </div>
+      <PageHeader
+        title={t.title}
+        actions={tab === "templates" && !showForm ? (
+          <button onClick={openNewForm} className="btn btn-primary">
+            {t.newTemplate}
+          </button>
+        ) : undefined}
+      />
 
       {/* Tabs */}
       <div style={{ display: "flex", gap: "4px", marginBottom: "28px", borderBottom: "1px solid var(--border)", paddingBottom: "0" }}>
@@ -231,7 +237,7 @@ export default function LeadsPage() {
           {leadsLoading ? (
             <div style={{ color: "var(--muted)", fontSize: "14px" }}>…</div>
           ) : leads.length === 0 ? (
-            <EmptyState title={t.noLeads} subtitle={t.noLeadsHint} />
+            <EmptyState icon="👤" iconBg="var(--steel-light)" title={t.noLeads} subtitle={t.noLeadsHint} />
           ) : filteredLeads.length === 0 ? (
             <div style={{ textAlign: "center", padding: "40px 0" }}>
               <div style={{ color: "var(--muted)", fontSize: "15px", marginBottom: "12px" }}>{t.noResults}</div>
@@ -262,13 +268,6 @@ export default function LeadsPage() {
       {/* ── TEMPLATES TAB ─────────────────────────────────────────────────── */}
       {tab === "templates" && (
         <div>
-          {/* Add button */}
-          {!showForm && (
-            <button onClick={openNewForm} style={primaryBtnStyle}>
-              {t.newTemplate}
-            </button>
-          )}
-
           {/* Form */}
           {showForm && (
             <div style={{ background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: "14px", padding: "24px", marginBottom: "20px" }}>
@@ -282,6 +281,32 @@ export default function LeadsPage() {
                     onChange={(e) => setFormTitle(e.target.value)}
                     style={inputStyle}
                   />
+                </div>
+                <div>
+                  <label style={labelStyle}>{t.templateLanguage}</label>
+                  <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+                    {(["he", "en"] as const).map((l) => (
+                      <button
+                        key={l}
+                        type="button"
+                        onClick={() => setFormLang(l)}
+                        style={{
+                          padding: "7px 20px",
+                          borderRadius: "8px",
+                          border: `1.5px solid ${formLang === l ? "var(--coral)" : "var(--border)"}`,
+                          background: formLang === l ? "var(--coral-light)" : "var(--bg)",
+                          color: formLang === l ? "var(--coral)" : "var(--text-secondary)",
+                          fontFamily: "var(--font-body)",
+                          fontSize: "14px",
+                          fontWeight: formLang === l ? 700 : 400,
+                          cursor: "pointer",
+                          transition: "all 150ms var(--ease-out)",
+                        }}
+                      >
+                        {l === "he" ? t.templateLangHe : t.templateLangEn}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <div>
                   <label style={labelStyle}>{t.templateBody}</label>
@@ -345,15 +370,26 @@ export default function LeadsPage() {
           {templatesLoading ? (
             <div style={{ color: "var(--muted)", fontSize: "14px" }}>…</div>
           ) : templates.length === 0 && !showForm ? (
-            <EmptyState title={t.noTemplates} subtitle={t.noTemplatesHint} />
+            <EmptyState icon="📝" title={t.noTemplates} subtitle={t.noTemplatesHint} />
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: showForm ? "0" : "20px" }}>
               {templates.map((tmpl) => (
                 <div key={tmpl.id} style={{ background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: "12px", padding: "18px 20px" }}>
                   <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: "15px", color: "var(--text-primary)", marginBottom: "6px" }}>
-                        {tmpl.title}
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                        <span style={{ fontWeight: 700, fontSize: "15px", color: "var(--text-primary)" }}>
+                          {tmpl.title}
+                        </span>
+                        <span style={{
+                          fontSize: "11px", fontWeight: 600, padding: "2px 8px",
+                          borderRadius: "10px", flexShrink: 0,
+                          background: tmpl.language === "en" ? "#EDE9FE" : "var(--steel-light)",
+                          color: tmpl.language === "en" ? "#7C3AED" : "var(--steel)",
+                          fontFamily: "var(--font-body)",
+                        }}>
+                          {tmpl.language === "en" ? t.templateLangEn : t.templateLangHe}
+                        </span>
                       </div>
                       <div style={{ fontSize: "13px", color: "var(--muted)", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
                         {tmpl.body}
@@ -483,15 +519,6 @@ function LeadCard({
   );
 }
 
-function EmptyState({ title, subtitle }: { title: string; subtitle: string }) {
-  return (
-    <div style={{ textAlign: "center", padding: "60px 20px" }}>
-      <div style={{ fontSize: "36px", marginBottom: "12px" }}>🎯</div>
-      <div style={{ fontWeight: 700, fontSize: "18px", color: "var(--text-primary)", marginBottom: "8px" }}>{title}</div>
-      <div style={{ fontSize: "14px", color: "var(--muted)", maxWidth: "380px", margin: "0 auto", lineHeight: 1.6 }}>{subtitle}</div>
-    </div>
-  );
-}
 
 function LinkedInMiniIcon() {
   return (

@@ -26,7 +26,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { title, body: templateBody, imageFilename } = body;
+    const { title, body: templateBody, imageFilename, language } = body;
 
     if (!title || !templateBody) {
       return NextResponse.json({ error: "title and body are required" }, { status: 400, headers: CORS });
@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
       title,
       body: templateBody,
       imageFilename: imageFilename ?? null,
+      language: language ?? "he",
     }).returning();
 
     return NextResponse.json(template, { status: 201, headers: CORS });
