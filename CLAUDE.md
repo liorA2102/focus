@@ -241,6 +241,13 @@ npx vercel deploy --prod
 
 ---
 
+## Claude Instructions
+
+- **Never modify the database** (schema changes, migrations, direct data edits, `.env.local` credential changes) unless explicitly asked.
+- When suggesting a DB-related fix, describe the change and wait for confirmation before touching any file.
+
+---
+
 ## Design Principles
 
 - Card-based layout, large text, clear action buttons
@@ -248,6 +255,16 @@ npx vercel deploy --prod
 - No numeric scores — match strength shown as labels only (Strong / Possible / Weak)
 - Simple, predictable, forgiving UI
 - RTL-friendly (Hebrew is default language)
+
+## Design System
+
+**`docs/design-system.md`** — the authoritative reference for shared components, tokens, and rules. **Read this before building or editing any page.**
+
+Key rules (enforced via components):
+- Every page top title uses `<PageHeader>` from `src/components/ui/PageHeader.tsx` — never inline `h2`
+- Every empty list/section uses `<EmptyState>` from `src/components/ui/EmptyState.tsx` — never inline empty-state markup
+- App headings always use `var(--font-body)` (Rubik, 800 weight) — **never** `var(--font-display)`
+- Buttons: `btn btn-primary` for CTAs, `btn btn-ghost` for secondary actions
 
 ## Full Design Doc
 

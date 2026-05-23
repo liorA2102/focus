@@ -20,7 +20,7 @@ export async function PATCH(
   const { id } = await params;
   try {
     const body = await req.json();
-    const { title, body: templateBody, imageFilename, language } = body;
+    const { title, body: templateBody, imageFilename } = body;
 
     const [updated] = await db
       .update(commentTemplates)
@@ -28,7 +28,6 @@ export async function PATCH(
         ...(title !== undefined && { title }),
         ...(templateBody !== undefined && { body: templateBody }),
         ...(imageFilename !== undefined && { imageFilename }),
-        ...(language !== undefined && { language }),
         updatedAt: new Date().toISOString(),
       })
       .where(eq(commentTemplates.id, Number(id)))

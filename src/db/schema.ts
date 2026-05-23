@@ -140,7 +140,6 @@ export const commentTemplates = sqliteTable("comment_templates", {
   title:         text("title").notNull(),
   body:          text("body").notNull(),
   imageFilename: text("image_filename"),
-  language:      text("language").notNull().default("he"),
   createdAt:     text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
   updatedAt:     text("updated_at").notNull().$defaultFn(() => new Date().toISOString()),
 });

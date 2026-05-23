@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import GenerateImageModal from "./GenerateImageModal";
 
 export type GalleryImage = {
   id: number;
@@ -15,6 +16,7 @@ interface Props {
   uploadError: string | null;
   onUpload: (files: FileList) => void;
   onRemove: (ids: number[]) => void;
+  onRefresh: () => void;
   t: {
     imageGallery: string;
     uploadBtn: string;
@@ -32,9 +34,10 @@ interface Props {
   };
 }
 
-export default function ImageGallery({ images, uploading, uploadError, onUpload, onRemove, t }: Props) {
+export default function ImageGallery({ images, uploading, uploadError, onUpload, onRemove, onRefresh, t }: Props) {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [dragOver, setDragOver] = useState(false);
+  const [generateOpen, setGenerateOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const toggle = (id: number) =>
@@ -84,29 +87,23 @@ export default function ImageGallery({ images, uploading, uploadError, onUpload,
           )}
         </h3>
 
-        {/* Create with AI — disabled */}
-        <div style={{ position: "relative" }}>
-          <button
-            disabled
-            title={t.createWithAIHint}
-            style={{
-              display: "inline-flex", alignItems: "center", gap: "6px",
-              padding: "7px 14px", borderRadius: "8px",
-              background: "var(--light-gray)", border: "1.5px solid var(--border)",
-              fontFamily: "var(--font-body)", fontSize: "13px", fontWeight: 600,
-              color: "var(--text-muted)", cursor: "not-allowed",
-            }}
-          >
-            ✦ {t.createWithAI}
-            <span style={{
-              fontSize: "10px", fontWeight: 700, letterSpacing: "0.04em",
-              background: "var(--border)", color: "var(--text-muted)",
-              borderRadius: "4px", padding: "1px 5px", marginLeft: "2px",
-            }}>
-              SOON
-            </span>
-          </button>
-        </div>
+        {/* Create with AI */}
+        <button
+          onClick={() => setGenerateOpen(true)}
+          title={t.createWithAIHint}
+          style={{
+            display: "inline-flex", alignItems: "center", gap: "6px",
+            padding: "7px 14px", borderRadius: "8px",
+            background: "var(--coral-light)", border: "1.5px solid var(--coral)",
+            fontFamily: "var(--font-body)", fontSize: "13px", fontWeight: 600,
+            color: "var(--coral)", cursor: "pointer",
+            transition: "opacity 140ms ease",
+          }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.8"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
+        >
+          ✦ {t.createWithAI}
+        </button>
 
         {/* Upload */}
         <button
@@ -296,13 +293,20 @@ export default function ImageGallery({ images, uploading, uploadError, onUpload,
                     overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                     borderTop: "1px solid var(--border)",
                   }}>
-                    {img.label ?? img.filename}
+                    {img.label ?? new Date(img.createdAt).toLocaleDateString("he-IL")}
                   </div>
                 </div>
               );
             })}
           </div>
         </div>
+      )}
+
+      {generateOpen && (
+        <GenerateImageModal
+          onClose={() => setGenerateOpen(false)}
+          onSaved={() => { setGenerateOpen(false); onRefresh(); }}
+        />
       )}
     </div>
   );

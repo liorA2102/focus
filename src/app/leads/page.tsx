@@ -39,8 +39,6 @@ export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [leadsLoading, setLeadsLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [editingNotes, setEditingNotes] = useState<Record<number, string>>({});
-  const [savingNotes, setSavingNotes] = useState<Record<number, boolean>>({});
   const [deletingLead, setDeletingLead] = useState<number | null>(null);
 
   const fetchLeads = async () => {
@@ -59,17 +57,6 @@ export default function LeadsPage() {
         return search.toLowerCase().split(" ").every((w) => hay.includes(w));
       })
     : leads;
-
-  const saveNotes = async (id: number) => {
-    setSavingNotes((s) => ({ ...s, [id]: true }));
-    await fetch(`/api/leads/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ notes: editingNotes[id] ?? "" }),
-    });
-    setSavingNotes((s) => ({ ...s, [id]: false }));
-    setLeads((prev) => prev.map((l) => l.id === id ? { ...l, notes: editingNotes[id] ?? l.notes } : l));
-  };
 
   const deleteLead = async (id: number) => {
     if (!confirm(t.confirmDelete)) return;
@@ -292,10 +279,6 @@ export default function LeadsPage() {
                   lead={lead}
                   t={t}
                   lang={lang}
-                  editingNote={editingNotes[lead.id] ?? lead.notes ?? ""}
-                  onNoteChange={(v) => setEditingNotes((n) => ({ ...n, [lead.id]: v }))}
-                  onSaveNote={() => saveNotes(lead.id)}
-                  savingNote={!!savingNotes[lead.id]}
                   onDelete={() => deleteLead(lead.id)}
                   deleting={deletingLead === lead.id}
                   formatDate={formatDate}
@@ -430,23 +413,17 @@ export default function LeadsPage() {
 // ── Lead Card ──────────────────────────────────────────────────────────────
 
 function LeadCard({
-  lead, t, lang, editingNote, onNoteChange, onSaveNote, savingNote, onDelete, deleting, formatDate,
+  lead, t, lang, onDelete, deleting, formatDate,
 }: {
   lead: Lead;
   t: typeof translations["en"]["leads"];
   lang: string;
-  editingNote: string;
-  onNoteChange: (v: string) => void;
-  onSaveNote: () => void;
-  savingNote: boolean;
   onDelete: () => void;
   deleting: boolean;
   formatDate: (s: string) => string;
 }) {
-  const noteDirty = editingNote !== (lead.notes ?? "");
-
   return (
-    <div style={{ background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: "14px", padding: "20px 22px" }}>
+    <div style={{ background: "#fff", border: "1px solid var(--border)", borderRadius: "14px", padding: "20px 22px" }}>
       <div style={{ display: "flex", gap: "14px" }}>
         {/* Avatar */}
         <div style={{ flexShrink: 0 }}>
@@ -502,21 +479,6 @@ function LeadCard({
             )}
           </div>
 
-          {/* Notes */}
-          <div style={{ marginTop: "12px", display: "flex", gap: "8px", alignItems: "flex-end" }}>
-            <textarea
-              placeholder={t.notesPlaceholder}
-              value={editingNote}
-              onChange={(e) => onNoteChange(e.target.value)}
-              rows={2}
-              style={{ flex: 1, padding: "8px 12px", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text-primary)", fontSize: "13px", fontFamily: "var(--font-body)", resize: "vertical", outline: "none" }}
-            />
-            {noteDirty && (
-              <button onClick={onSaveNote} disabled={savingNote} style={{ ...primaryBtnStyle, padding: "8px 14px", fontSize: "13px", flexShrink: 0 }}>
-                {savingNote ? "…" : t.saveNotes}
-              </button>
-            )}
-          </div>
         </div>
       </div>
     </div>

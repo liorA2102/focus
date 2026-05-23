@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLang } from "@/context/LanguageContext";
 import translations from "@/lib/t";
+import PageHeader from "@/components/ui/PageHeader";
 
 type LiStatus = { connected: boolean; name?: string; picture?: string };
 type LiImage  = { id: number; filename: string; label: string | null; createdAt: string };
@@ -103,15 +104,9 @@ export default function LinkedInPage() {
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-        <div>
-          <div className="accent-rule" style={{ marginBottom: "12px" }} />
-          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "34px", fontWeight: "400", letterSpacing: "-0.3px", color: "var(--navy)", lineHeight: 1.1 }}>
-            {t.title}
-          </h2>
-        </div>
-        {/* Connection status */}
-        {status !== null && (
+      <PageHeader
+        title={t.title}
+        actions={status !== null ? (
           status.connected ? (
             <span style={{
               display: "inline-flex", alignItems: "center", gap: "7px",
@@ -137,8 +132,8 @@ export default function LinkedInPage() {
               {LI_ICON} {t.connectBtn}
             </a>
           )
-        )}
-      </div>
+        ) : undefined}
+      />
 
       {/* ── Post Composer + Preview ── */}
       <div style={{

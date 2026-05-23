@@ -5,6 +5,8 @@ import Link from "next/link";
 import NewPositionModal from "@/components/positions/NewPositionModal";
 import { useLang } from "@/context/LanguageContext";
 import translations from "@/lib/t";
+import PageHeader from "@/components/ui/PageHeader";
+import EmptyState from "@/components/ui/EmptyState";
 
 type PositionStats = {
   total: number;
@@ -108,34 +110,31 @@ export default function PositionsPage() {
   return (
     <div>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "28px", gap: "20px" }}>
-        <div>
-          <div className="accent-rule" style={{ marginBottom: "10px" }} />
-          <h2 style={{ fontFamily: "var(--font-body)", fontSize: "32px", fontWeight: 800, letterSpacing: "-0.5px", color: "var(--navy)", lineHeight: 1.1, margin: 0 }}>
-            {t.title}
-          </h2>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px", flexShrink: 0 }}>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <button
-              onClick={handleJobMasterSync}
-              disabled={syncing}
-              className="btn btn-ghost"
-              style={{ fontSize: "13px", padding: "9px 16px", cursor: syncing ? "default" : "pointer", opacity: syncing ? 0.6 : 1 }}
-            >
-              {syncing ? "מסנכרן…" : "↓ סנכרן JobMaster"}
-            </button>
-            <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-              {t.newPosition}
-            </button>
+      <PageHeader
+        title={t.title}
+        actions={
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button
+                onClick={handleJobMasterSync}
+                disabled={syncing}
+                className="btn btn-ghost"
+                style={{ fontSize: "13px", padding: "9px 16px", cursor: syncing ? "default" : "pointer", opacity: syncing ? 0.6 : 1 }}
+              >
+                {syncing ? "מסנכרן…" : "↓ סנכרן JobMaster"}
+              </button>
+              <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+                {t.newPosition}
+              </button>
+            </div>
+            {syncMsg && (
+              <span style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: syncMsg.startsWith("שגיאה") ? "var(--coral)" : "var(--strong)" }}>
+                {syncMsg}
+              </span>
+            )}
           </div>
-          {syncMsg && (
-            <span style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: syncMsg.startsWith("שגיאה") ? "var(--coral)" : "var(--strong)" }}>
-              {syncMsg}
-            </span>
-          )}
-        </div>
-      </div>
+        }
+      />
 
       {/* ── Pipeline health dashboard ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "20px" }}>
@@ -240,36 +239,20 @@ export default function PositionsPage() {
 
       {/* ── Cards / Empty state ── */}
       {loaded && positions.length === 0 ? (
-        <div style={{
-          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-          padding: "80px 24px",
-          background: "var(--surface)",
-          border: "1.5px dashed var(--border)",
-          borderRadius: "16px",
-          gap: "12px",
-        }}>
-          <div style={{
-            width: "56px", height: "56px", borderRadius: "14px",
-            background: "var(--coral-light)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: "26px",
-          }}>
-            📋
-          </div>
-          <p style={{ fontFamily: "var(--font-body)", fontSize: "20px", fontWeight: "700", color: "var(--navy)", letterSpacing: "-0.3px", marginTop: "4px" }}>
-            {t.emptyTitle}
-          </p>
-          <p style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--text-muted)", maxWidth: "280px", textAlign: "center", lineHeight: "1.65" }}>
-            {t.emptySubtitle}
-          </p>
-          <button
-            className="btn btn-primary"
-            style={{ marginTop: "8px", fontSize: "15px", padding: "12px 28px" }}
-            onClick={() => setShowModal(true)}
-          >
-            {t.emptyCta}
-          </button>
-        </div>
+        <EmptyState
+          icon="📋"
+          title={t.emptyTitle}
+          subtitle={t.emptySubtitle}
+          action={
+            <button
+              className="btn btn-primary"
+              style={{ fontSize: "15px", padding: "12px 28px" }}
+              onClick={() => setShowModal(true)}
+            >
+              {t.emptyCta}
+            </button>
+          }
+        />
       ) : loaded && filtered.length === 0 ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "60px 0", gap: "10px" }}>
           <div style={{ fontSize: "32px", opacity: 0.2 }}>◫</div>
@@ -342,7 +325,7 @@ export default function PositionsPage() {
                 <div style={{ borderTop: "1px solid var(--border)", padding: "8px 20px 10px", display: "flex", justifyContent: "flex-end", gap: "5px" }}>
                   {p.postedJobMaster ? (
                     p.jobMasterUrl ? (
-                      <a href={p.jobMasterUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="pub-badge jm">JM</a>
+                      <span className="pub-badge jm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(p.jobMasterUrl!, "_blank", "noopener,noreferrer"); }} style={{ cursor: "pointer" }}>JM</span>
                     ) : (
                       <span className="pub-badge jm">JM</span>
                     )
@@ -351,7 +334,7 @@ export default function PositionsPage() {
                   )}
                   {p.postedLinkedin ? (
                     p.linkedinPostUrl ? (
-                      <a href={p.linkedinPostUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="pub-badge li">in</a>
+                      <span className="pub-badge li" onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(p.linkedinPostUrl!, "_blank", "noopener,noreferrer"); }} style={{ cursor: "pointer" }}>in</span>
                     ) : (
                       <span className="pub-badge li">in</span>
                     )

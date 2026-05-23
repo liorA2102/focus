@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLang } from "@/context/LanguageContext";
 import translations from "@/lib/t";
+import PageHeader from "@/components/ui/PageHeader";
 import ImageGallery from "@/components/linkedin/ImageGallery";
 
 type LiImage = { id: number; filename: string; label: string | null; createdAt: string };
@@ -46,12 +47,7 @@ export default function GalleryPage() {
 
   return (
     <div>
-      <div style={{ marginBottom: "28px" }}>
-        <div className="accent-rule" style={{ marginBottom: "12px" }} />
-        <h2 style={{ fontFamily: "var(--font-body)", fontSize: "32px", fontWeight: 800, letterSpacing: "-0.5px", color: "var(--navy)", lineHeight: 1.1, margin: 0 }}>
-          {t.sidebar.gallery}
-        </h2>
-      </div>
+      <PageHeader title={t.sidebar.gallery} />
 
       <ImageGallery
         images={images}
@@ -59,6 +55,7 @@ export default function GalleryPage() {
         uploadError={uploadError}
         onUpload={uploadFiles}
         onRemove={removeImages}
+        onRefresh={fetchImages}
         t={{
           imageGallery:    t.linkedin.imageGallery,
           uploadBtn:       t.linkedin.uploadBtn,

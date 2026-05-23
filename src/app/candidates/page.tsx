@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/context/LanguageContext";
 import translations from "@/lib/t";
+import PageHeader from "@/components/ui/PageHeader";
 
 type PositionMatch = {
   id: number;
@@ -22,6 +23,7 @@ type Candidate = {
   location: string | null;
   source: "jobmaster" | "manual" | "website";
   createdAt: string;
+  updatedAt: string;
   matches: PositionMatch[];
 };
 
@@ -107,19 +109,16 @@ export default function CandidatesPage() {
   return (
     <div>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "28px" }}>
-        <div>
-          <div className="accent-rule" style={{ marginBottom: "10px" }} />
-          <h2 style={{ fontFamily: "var(--font-body)", fontSize: "32px", fontWeight: 800, letterSpacing: "-0.5px", color: "var(--navy)", lineHeight: 1.1, margin: 0 }}>
-            {t.title}
-          </h2>
-        </div>
-        <button className="btn btn-primary" onClick={() => fileInputRef.current?.click()}>
-          {t.uploadBtn}
-        </button>
-        <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.txt" multiple
-          style={{ display: "none" }} onChange={e => handleFiles(e.target.files)} />
-      </div>
+      <PageHeader
+        title={t.title}
+        actions={<>
+          <button className="btn btn-primary" onClick={() => fileInputRef.current?.click()}>
+            {t.uploadBtn}
+          </button>
+          <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.txt" multiple
+            style={{ display: "none" }} onChange={e => handleFiles(e.target.files)} />
+        </>}
+      />
 
       {/* ── Drop zone ── */}
       <div
@@ -240,11 +239,12 @@ type CandidatesT = (typeof translations)[keyof typeof translations]["candidates"
 
 function CandidateTable({ candidates, t, isRtl }: { candidates: Candidate[]; t: CandidatesT; isRtl: boolean }) {
   const cols = [
-    { key: "name",    label: isRtl ? "שם"     : "Name",    width: "minmax(180px,2fr)" },
-    { key: "title",   label: isRtl ? "תפקיד"  : "Title",   width: "minmax(160px,2fr)" },
-    { key: "matches", label: isRtl ? "התאמות" : "Matches", width: "minmax(80px,1fr)"  },
-    { key: "source",  label: isRtl ? "מקור"   : "Source",  width: "minmax(100px,1fr)" },
-    { key: "wa",      label: "",                            width: "50px"              },
+    { key: "name",      label: isRtl ? "שם"        : "Name",         width: "minmax(180px,2fr)" },
+    { key: "title",     label: isRtl ? "תפקיד"     : "Title",        width: "minmax(160px,2fr)" },
+    { key: "matches",   label: isRtl ? "התאמות"    : "Matches",      width: "minmax(80px,1fr)"  },
+    { key: "source",    label: isRtl ? "מקור"      : "Source",       width: "minmax(100px,1fr)" },
+    { key: "updatedAt", label: isRtl ? "עודכן"     : "Updated",      width: "minmax(110px,1fr)" },
+    { key: "wa",        label: "",                                     width: "50px"              },
   ];
 
   return (
@@ -277,11 +277,20 @@ function CandidateTable({ candidates, t, isRtl }: { candidates: Candidate[]; t: 
 
       {/* Rows */}
       {candidates.map((c, i) => (
-        <CandidateRow key={c.id} candidate={c} t={t} even={i % 2 === 0} cols={cols} />
+        <CandidateRow key={c.id} candidate={c} t={t} even={i % 2 === 0} cols={cols} lang={isRtl ? "he" : "en"} />
       ))}
     </div>
     </div>
   );
+}
+
+function fmtDate(iso: string, lang: string): string {
+  const d = new Date(iso);
+  const diffDays = Math.floor((Date.now() - d.getTime()) / 86400000);
+  if (diffDays === 0) return lang === "he" ? "היום" : "Today";
+  if (diffDays === 1) return lang === "he" ? "אתמול" : "Yesterday";
+  if (diffDays < 30)  return lang === "he" ? `לפני ${diffDays} ימים` : `${diffDays}d ago`;
+  return d.toLocaleDateString(lang === "he" ? "he-IL" : "en-GB", { day: "numeric", month: "short" });
 }
 
 function waLink(phone: string): string {
@@ -290,9 +299,9 @@ function waLink(phone: string): string {
   return `https://wa.me/${normalized}`;
 }
 
-function CandidateRow({ candidate: c, t, even, cols }: {
+function CandidateRow({ candidate: c, t, even, cols, lang }: {
   candidate: Candidate; t: CandidatesT; even: boolean;
-  cols: { key: string; width: string }[];
+  cols: { key: string; width: string }[]; lang: string;
 }) {
   const router = useRouter();
   const [hovered, setHovered] = useState(false);
@@ -391,6 +400,13 @@ function CandidateRow({ candidate: c, t, even, cols }: {
           }}>
             <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: src.dot, flexShrink: 0 }} />
             {srcLabel}
+          </span>
+        </div>
+
+        {/* Updated at */}
+        <div style={cellStyle("updatedAt")}>
+          <span style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: "var(--text-muted)" }}>
+            {fmtDate(c.updatedAt, lang)}
           </span>
         </div>
 

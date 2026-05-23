@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useLang } from "@/context/LanguageContext";
 import translations from "@/lib/t";
+import PageHeader from "@/components/ui/PageHeader";
 
 type PollResult = {
   emailsScanned: number;
@@ -163,17 +164,12 @@ export default function EmailInboxPage() {
 
   return (
     <div style={{ maxWidth: "560px" }}>
-      <h2 style={{
-        fontFamily: "var(--font-display)",
-        fontSize: "26px", fontWeight: "400",
-        color: "var(--navy)", marginBottom: "6px",
-      }}>
-        {t.title}
-      </h2>
+      <PageHeader title={t.title} />
       <p style={{
         fontFamily: "var(--font-body)",
         fontSize: "14px", color: "var(--text-secondary)",
         marginBottom: "28px",
+        marginTop: "-16px",
       }}>
         {t.subtitle}
       </p>

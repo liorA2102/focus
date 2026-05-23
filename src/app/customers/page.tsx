@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLang } from "@/context/LanguageContext";
 import translations from "@/lib/t";
 import AddClientModal from "@/components/customers/AddClientModal";
+import PageHeader from "@/components/ui/PageHeader";
 
 type Client = {
   id:            number;
@@ -67,17 +68,14 @@ export default function CustomersPage() {
   return (
     <div>
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "28px" }}>
-        <div>
-          <div className="accent-rule" style={{ marginBottom: "10px" }} />
-          <h2 style={{ fontFamily: "var(--font-body)", fontSize: "32px", fontWeight: 800, letterSpacing: "-0.5px", color: "var(--navy)", lineHeight: 1.1, margin: 0 }}>
-            {t.title}
-          </h2>
-        </div>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-          {t.addClient}
-        </button>
-      </div>
+      <PageHeader
+        title={t.title}
+        actions={
+          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+            {t.addClient}
+          </button>
+        }
+      />
 
       {/* Metric cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", marginBottom: "28px" }}>
