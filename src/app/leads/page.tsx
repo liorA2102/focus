@@ -191,20 +191,9 @@ export default function LeadsPage() {
       <PageHeader
         title={t.title}
         actions={tab === "templates" && !showForm ? (
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-            {templates.length > 0 && (
-              <button onClick={exportTemplates} style={ghostBtnStyle}>
-                {lang === "he" ? "⬇ יצוא" : "⬇ Export"}
-              </button>
-            )}
-            <label style={{ ...ghostBtnStyle, cursor: "pointer" }}>
-              {lang === "he" ? "⬆ ייבוא" : "⬆ Import"}
-              <input type="file" accept=".json" onChange={importTemplates} style={{ display: "none" }} />
-            </label>
-            <button onClick={openNewForm} className="btn btn-primary">
-              {t.newTemplate}
-            </button>
-          </div>
+          <button onClick={openNewForm} className="btn btn-primary">
+            {t.newTemplate}
+          </button>
         ) : undefined}
       />
 
