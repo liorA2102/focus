@@ -325,6 +325,7 @@ export const translations = {
       clearSelection:   "Clear",
       generateModal: {
         title:              "Create an Image with AI",
+        promptTitle:        "Review the Prompt",
         brandingNote:       "Focus Group branding guidelines are already applied",
         typeLabel:          "Type",
         typeImage:          "Photo",
@@ -674,6 +675,7 @@ export const translations = {
       clearSelection:   "נקה",
       generateModal: {
         title:              "יצירת תמונה עם AI",
+        promptTitle:        "בדוק את הפרומפט",
         brandingNote:       "הנחיות המיתוג של Focus Group כבר מוגדרות",
         typeLabel:          "סוג",
         typeImage:          "תמונה",
